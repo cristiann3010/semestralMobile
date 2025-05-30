@@ -52,12 +52,12 @@ const Menu = ({ visible, onClose, onNavigate }) => {
             <View style={styles.menuItems}>
               <MenuItem icon="🎓" text="Cursos Técnicos" onPress={() => handlePress('Cursos Técnicos', 'cursos')} />
               <MenuItem icon="👥" text="Candidatos" onPress={() => handlePress('Candidatos')} />
-              <MenuItem icon="📝" text="Blog" onPress={() => handlePress('Blog')} />
-              <MenuItem icon="⚙️" text="Administração" onPress={() => handlePress('Administração')} />
+              <MenuItem icon="📝" text="Blog" onPress={() => handlePress('Blog', 'blog')} />
+              <MenuItem icon="⚙️" text="Administração" onPress={() => handlePress('Administração', 'administracao')} />
             </View>
             <View style={styles.buttonsSection}>
               <TouchableOpacity style={styles.loginButton} onPress={() => handlePress('Login')} activeOpacity={0.8}>
-                <Text style={styles.loginButtonText}>Fazer Login</Text>
+                <Text style={styles.loginButtonText}>Contatos</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.registerButton} onPress={() => handlePress('Cadastre-se')} activeOpacity={0.8}>
                 <View style={styles.registerButtonGradient}>

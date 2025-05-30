@@ -2,8 +2,11 @@ import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar, SafeAreaView, Dimensions, ImageBackground, Image, ScrollView, Animated, Pressable } from 'react-native';
 import Menu from './menu';
 import CursosScreen from './cursos';
+import BlogScreen from './blog';
 import LoginScreen from './login';
 import CadastroScreen from './cadastro';
+import AdministracaoScreen from './administracao';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -111,6 +114,7 @@ export default function App() {
   const handleVerTodos = useCallback(() => console.log('Ver Todos pressionado'), []);
   const handleFooterLink = useCallback((linkText) => {
     if (linkText === 'Cursos') setCurrentScreen('cursos');
+    else if (linkText === 'Blog') setCurrentScreen('blog');
     else console.log(`${linkText} pressionado`);
   }, []);
 
@@ -163,6 +167,26 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#0f0f0f" />
         <CursosScreen onNavigateBack={() => setCurrentScreen('home')} />
+        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
+      </SafeAreaView>
+    );
+  }
+
+  if (currentScreen === 'blog') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
+        <BlogScreen onNavigateBack={() => setCurrentScreen('home')} />
+        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
+      </SafeAreaView>
+    );
+  }
+
+ if (currentScreen === 'administracao') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
+        <AdministracaoScreen onNavigateBack={() => setCurrentScreen('home')} />
         {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
       </SafeAreaView>
     );
