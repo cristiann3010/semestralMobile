@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, StatusBar, SafeAreaView, Dime
 import Menu from './menu';
 import CursosScreen from './cursos';
 import LoginScreen from './login';
-
+import CadastroScreen from './cadastro';
 
 const { width, height } = Dimensions.get('window');
 
@@ -104,8 +104,10 @@ export default function App() {
   const handleMenuClose = useCallback(() => setMenuVisible(false), []);
   const handleNavigate = useCallback((screen) => { setCurrentScreen(screen); setMenuVisible(false); }, []);
   const handleLogin = useCallback(() => setCurrentScreen('login'), []);
+  const handleCadastro = useCallback(() => setCurrentScreen('cadastro'), []);
   const handleLoginSuccess = useCallback(() => { setIsLoggedIn(true); setCurrentScreen('home'); }, []);
-  const handleContato = useCallback(() => console.log('Cadastre-se pressionado'), []);
+  const handleRegisterSuccess = useCallback(() => setCurrentScreen('login'), []);
+  const handleNavigateToLogin = useCallback(() => setCurrentScreen('login'), []);
   const handleVerTodos = useCallback(() => console.log('Ver Todos pressionado'), []);
   const handleFooterLink = useCallback((linkText) => {
     if (linkText === 'Cursos') setCurrentScreen('cursos');
@@ -136,6 +138,20 @@ export default function App() {
         <LoginScreen 
           onNavigateBack={() => setCurrentScreen('home')} 
           onLoginSuccess={handleLoginSuccess}
+        />
+        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
+      </SafeAreaView>
+    );
+  }
+
+  if (currentScreen === 'cadastro') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
+        <CadastroScreen 
+          onNavigateBack={() => setCurrentScreen('home')} 
+          onNavigateToLogin={handleNavigateToLogin}
+          onRegisterSuccess={handleRegisterSuccess}
         />
         {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
       </SafeAreaView>
@@ -173,7 +189,7 @@ export default function App() {
               <AnimatedButton style={styles.primaryButton} onPress={handleLogin} animationType="scale">
                 <Text style={styles.primaryButtonText}>{isLoggedIn ? 'Área do Usuário' : 'Login'}</Text>
               </AnimatedButton>
-              <AnimatedButton style={styles.secondaryButton} onPress={handleContato} animationType="scale">
+              <AnimatedButton style={styles.secondaryButton} onPress={handleCadastro} animationType="scale">
                 <Text style={styles.secondaryButtonText}>Cadastre-se</Text>
               </AnimatedButton>
             </View>
