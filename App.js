@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   welcomeSection: { alignItems: 'center', marginTop: 80 },
   welcomeText: { fontSize: 56, fontWeight: '300', color: '#ffffff', marginBottom: 5, textAlign: 'center' },
   augeBitText: { fontSize: 66, fontWeight: 'bold', color: '#9474FF', letterSpacing: 2, textAlign: 'center' },
-  flexSpace: { flex: 1, minHeight: 100 },
+  flexSpace: { flex: 1, minHeight: 60 },
   buttonsSection: { gap: 15, marginBottom: 20 },
   primaryButton: { backgroundColor: '#6366f1', paddingVertical: 16, borderRadius: 25, alignItems: 'center', shadowColor: '#6366f1', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 },
   primaryButtonText: { fontSize: 18, fontWeight: '600', color: '#ffffff' },

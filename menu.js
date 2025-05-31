@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Animated, Dimensions, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Animated, Dimensions, StatusBar, ScrollView } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -39,37 +39,44 @@ const Menu = ({ visible, onClose, onNavigate }) => {
         <TouchableOpacity style={styles.overlayTouchable} onPress={onClose} activeOpacity={1} />
         <Animated.View style={[styles.menuContainer, { transform: [{ translateX: slideAnim }] }]}>
           <View style={styles.backgroundGradient} />
+          <View style={styles.menuHeader}>
+            <Text style={styles.menuHeaderText}>MENU</Text>
+            <View style={styles.menuHeaderLine} />
+          </View>
           <TouchableOpacity style={styles.closeButton} onPress={onClose} activeOpacity={0.7}>
             <View style={styles.closeButtonContainer}>
               <Text style={styles.closeButtonText}>✕</Text>
             </View>
           </TouchableOpacity>
-          <View style={styles.menuContent}>
-            <View style={styles.menuHeader}>
-              <Text style={styles.menuHeaderText}>MENU</Text>
-              <View style={styles.menuHeaderLine} />
+          <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            bounces={true}
+          >
+            <View style={styles.menuContent}>
+              <View style={styles.menuItems}>
+                <MenuItem icon="🎓" text="Cursos Técnicos" onPress={() => handlePress('Cursos Técnicos', 'cursos')} />
+                <MenuItem icon="👥" text="Candidatos" onPress={() => handlePress('Candidatos')} />
+                <MenuItem icon="📝" text="Blog" onPress={() => handlePress('Blog', 'blog')} />
+                <MenuItem icon="⚙️" text="Administração" onPress={() => handlePress('Administração', 'administracao')} />
+              </View>
+              <View style={styles.buttonsSection}>
+                <TouchableOpacity style={styles.loginButton} onPress={() => handlePress('Login')} activeOpacity={0.8}>
+                  <Text style={styles.loginButtonText}>Contatos</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.registerButton} onPress={() => handlePress('Cadastre-se')} activeOpacity={0.8}>
+                  <View style={styles.registerButtonGradient}>
+                    <Text style={styles.registerButtonText}>Cadastre-se</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.menuFooter}>
+                <Text style={styles.menuFooterText}>AUGEBIT © 2025</Text>
+                <Text style={styles.menuFooterSubtext}>Versão 1.0</Text>
+              </View>
             </View>
-            <View style={styles.menuItems}>
-              <MenuItem icon="🎓" text="Cursos Técnicos" onPress={() => handlePress('Cursos Técnicos', 'cursos')} />
-              <MenuItem icon="👥" text="Candidatos" onPress={() => handlePress('Candidatos')} />
-              <MenuItem icon="📝" text="Blog" onPress={() => handlePress('Blog', 'blog')} />
-              <MenuItem icon="⚙️" text="Administração" onPress={() => handlePress('Administração', 'administracao')} />
-            </View>
-            <View style={styles.buttonsSection}>
-              <TouchableOpacity style={styles.loginButton} onPress={() => handlePress('Login')} activeOpacity={0.8}>
-                <Text style={styles.loginButtonText}>Contatos</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.registerButton} onPress={() => handlePress('Cadastre-se')} activeOpacity={0.8}>
-                <View style={styles.registerButtonGradient}>
-                  <Text style={styles.registerButtonText}>Cadastre-se</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.menuFooter}>
-              <Text style={styles.menuFooterText}>AUGEBIT © 2025</Text>
-              <Text style={styles.menuFooterSubtext}>Versão 1.0</Text>
-            </View>
-          </View>
+          </ScrollView>
         </Animated.View>
       </View>
     </Modal>
@@ -86,7 +93,7 @@ const styles = StyleSheet.create({
   },
   backgroundGradient: {
     position: 'absolute', top: 0, left: 0, right: 0, height: '30%', backgroundColor: 'rgba(139, 92, 246, 0.1)',
-    borderBottomWidth: 1, borderBottomColor: 'rgba(139, 92, 246, 0.2)'
+    borderBottomWidth: 1, borderBottomColor: 'rgba(139, 92, 246, 0.2)', zIndex: 1
   },
   closeButton: { position: 'absolute', top: (StatusBar.currentHeight || 0) + 15, right: 20, zIndex: 10 },
   closeButtonContainer: {
@@ -94,8 +101,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.4)'
   },
   closeButtonText: { fontSize: 20, color: '#ffffff', fontWeight: 'bold' },
-  menuContent: { flex: 1, paddingHorizontal: 25, paddingTop: 20 },
-  menuHeader: { paddingVertical: 30, alignItems: 'center' },
+  scrollView: { flex: 1, marginTop: 120 },
+  scrollContent: { flexGrow: 1 },
+  menuContent: { paddingHorizontal: 25, paddingTop: 20 },
+  menuHeader: { position: 'absolute', top: (StatusBar.currentHeight || 0) + 50, left: 0, right: 0, paddingVertical: 30, alignItems: 'center', zIndex: 2, backgroundColor: 'transparent' },
   menuHeaderText: { fontSize: 28, fontWeight: 'bold', color: '#ffffff', letterSpacing: 3, marginBottom: 10 },
   menuHeaderLine: { width: 60, height: 3, backgroundColor: '#8b5cf6', borderRadius: 2 },
   menuItems: { flex: 1, paddingTop: 50 },
