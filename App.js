@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar, SafeAreaView, Dimensions, ImageBackground, Image, ScrollView, Animated, Pressable } from 'react-native';
 import Menu from './menu';
 import CursosScreen from './cursos';
@@ -15,6 +15,40 @@ const HERO_HEIGHT = height * 0.85;
 const OVERLAY_COLOR = 'rgba(26, 15, 46, 0.2)';
 const MENU_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const MENU_BORDER_COLOR = 'rgba(255, 255, 255, 0.2)';
+
+// Componente de Tela de Loading
+const LoadingScreen = () => {
+  const fadeValue = useRef(new Animated.Value(0)).current;
+  const scaleValue = useRef(new Animated.Value(0.8)).current;
+  const rotateValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeValue, { toValue: 1, duration: 800, useNativeDriver: true }),
+      Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, tension: 80, friction: 8 }),
+      Animated.loop(
+        Animated.timing(rotateValue, { toValue: 1, duration: 2000, useNativeDriver: true })
+      )
+    ]).start();
+  }, []);
+
+  const rotateInterpolate = rotateValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg']
+  });
+
+  return (
+    <View style={styles.loadingContainer}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
+      <Animated.View style={[styles.loadingContent, { opacity: fadeValue, transform: [{ scale: scaleValue }] }]}>
+        <Image source={require('./img/logo-removebg-preview 2.png')} style={styles.loadingLogo} resizeMode="contain" />
+        <Text style={styles.loadingTitle}>AUGEBIT</Text>
+        <Animated.View style={[styles.loadingSpinner, { transform: [{ rotate: rotateInterpolate }] }]} />
+        <Text style={styles.loadingText}>Carregando...</Text>
+      </Animated.View>
+    </View>
+  );
+};
 
 // Componente de botão animado
 const AnimatedButton = ({ style, children, onPress, animationType = 'scale' }) => {
@@ -80,11 +114,29 @@ const AnimatedMenuButton = ({ onPress, children }) => {
   );
 };
 
-// Dados estáticos
+// Dados estáticos - Agora com imagens
 const NEWS_DATA = [
-  { id: 1, date: '15 Maio 2025', title: 'Novidades em Tecnologia', action: 'Leia Mais' },
-  { id: 2, date: '15 Maio 2025', title: 'Novidades em Tecnologia', action: 'Leia Mais' },
-  { id: 3, date: '15 Maio 2025', title: 'Novidades em Tecnologia', action: 'Leia Mais' },
+  { 
+    id: 1,
+    date: '15 Maio 2025', 
+    title: 'Novidades em Tecnologia', 
+    action: 'Leia Mais',
+    image: require('./img/new1.png')
+  },
+  { 
+    id: 2,
+    date: '15 Maio 2025', 
+    title: 'Novidades em Tecnologia',
+    action: 'Leia Mais',
+    image: require('./img/new2.png')
+  },
+  { 
+    id: 3,
+    date: '15 Maio 2025', 
+    title: 'Novidades em Tecnologia', 
+    action: 'Leia Mais',
+    image: require('./img/new3.png')
+  },
 ];
 
 const FOOTER_LINKS = [
@@ -98,9 +150,16 @@ const CONTACT_INFO = [
 ];
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [menuVisible, setMenuVisible] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Simula carregamento inicial
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Callbacks memoizados
   const handleMenuPress = useCallback(() => setMenuVisible(true), []);
@@ -133,6 +192,11 @@ export default function App() {
       <AnimatedMenuButton onPress={handleMenuPress}>{MenuIcon}</AnimatedMenuButton>
     </View>
   ), [handleMenuPress, MenuIcon]);
+
+  // Tela de Loading
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   // Renderização condicional das telas
   if (currentScreen === 'login') {
@@ -223,8 +287,8 @@ export default function App() {
         <View style={styles.contentSections}>
           {/* Seções de conteúdo */}
           {[
-            { title: 'What is lorem ?', text: 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.' },
-            { title: 'What is lorem ?', text: 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up...', extra: 'McClintock.Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.' },
+            { title: 'O que é a Augebit?', text: 'Augebit é uma empresa especializada em desenvolver e gerir projetos de design voltados para a produção de equipamentos e produtos de consumo final para industrias. A empresa conta com uma equipe qualificada e com um diferencial estratégico, onde os colaboradores recebem mentoria do diretor de arte da empresa, auxiliando para um melhor desenvolvimento técnico de cada projeto.' },
+            { title: 'What is lorem ?', text: 'Augebit oferece cursos presenciais pensados para quem quer ir além da teoria. Aprenda na prática com uma equipe experiente, em um ambiente que estimula a criatividade e o desenvolvimento técnico real. Se você quer crescer na área de design e indústria com apoio direto de profissionais qualificados, nossos cursos são pra você. Participe e descubra o diferencial Augebit de perto!' },
             { title: 'What is lorem ipsum?', text: 'McClintock.Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.' }
           ].map((section, i) => (
             <View key={i} style={styles.sectionContainer}>
@@ -238,16 +302,16 @@ export default function App() {
           <View style={styles.novidadesSection}>
             <Text style={styles.novidadesTitle}>NOVIDADES</Text>
             <AnimatedButton style={styles.verTodosButton} onPress={handleVerTodos} animationType="opacity">
-              <Text style={styles.verTodosText}>Ver Todos</Text>
+              <Text style={styles.verTodosText}>Ver Mais</Text>
               <Text style={styles.arrowText}>→</Text>
             </AnimatedButton>
           </View>
 
-          {/* Cards de Notícias */}
+          {/* Cards de Notícias - Agora com imagens reais */}
           <View style={styles.newsCardsContainer}>
             {NEWS_DATA.map((news) => (
               <View key={news.id} style={styles.newsCard}>
-                <View style={styles.newsImagePlaceholder} />
+                <Image source={news.image} style={styles.newsImage} resizeMode="cover" />
                 <View style={styles.newsContent}>
                   <Text style={styles.newsDate}>{news.date}</Text>
                   <Text style={styles.newsTitle}>{news.title}</Text>
@@ -304,6 +368,16 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   backgroundImage: { width: '100%', height: HERO_HEIGHT },
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: OVERLAY_COLOR },
+  
+  // Estilos da Tela de Loading
+  loadingContainer: { flex: 1, backgroundColor: '#1a0f2e', justifyContent: 'center', alignItems: 'center' },
+  loadingContent: { alignItems: 'center', justifyContent: 'center' },
+  loadingLogo: { width: 120, height: 80, marginBottom: 20 },
+  loadingTitle: { fontSize: 36, fontWeight: 'bold', color: '#9474FF', letterSpacing: 2, marginBottom: 30 },
+  loadingSpinner: { width: 40, height: 40, borderWidth: 3, borderColor: 'rgba(148, 116, 255, 0.3)', borderTopColor: '#9474FF', borderRadius: 20, marginBottom: 20 },
+  loadingText: { fontSize: 16, color: '#ffffff', opacity: 0.8 },
+  
+  // Estilos existentes
   fixedHeaderContainer: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 15, paddingTop: 50, backgroundColor: 'rgba(26, 15, 46, 0.95)', zIndex: 1000, elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 },
   headerSpacer: { height: 115 },
   logoContainer: { flexDirection: 'row', alignItems: 'center', height: 20 },
@@ -315,6 +389,7 @@ const styles = StyleSheet.create({
   welcomeSection: { alignItems: 'center', marginTop: 80 },
   welcomeText: { fontSize: 56, fontWeight: '300', color: '#ffffff', marginBottom: 5, textAlign: 'center' },
   augeBitText: { fontSize: 66, fontWeight: 'bold', color: '#9474FF', letterSpacing: 2, textAlign: 'center' },
+  loggedInText: { fontSize: 16, color: '#4ade80', marginTop: 10, fontWeight: '500' },
   flexSpace: { flex: 1, minHeight: 100 },
   buttonsSection: { gap: 15, marginBottom: 20 },
   primaryButton: { backgroundColor: '#6366f1', paddingVertical: 16, borderRadius: 25, alignItems: 'center', shadowColor: '#6366f1', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 },
@@ -333,7 +408,7 @@ const styles = StyleSheet.create({
   arrowText: { fontSize: 16, color: '#8b5cf6', fontWeight: 'bold' },
   newsCardsContainer: { marginTop: 30, marginBottom: 30, gap: 25 },
   newsCard: { backgroundColor: '#000000', borderRadius: 15, overflow: 'hidden', elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 },
-  newsImagePlaceholder: { width: '100%', height: 150, backgroundColor: '#d3d3d3' },
+  newsImage: { width: '100%', height: 150 },
   newsContent: { padding: 20 },
   newsDate: { fontSize: 14, color: '#cccccc', marginBottom: 8 },
   newsTitle: { fontSize: 18, fontWeight: '600', color: '#ffffff', marginBottom: 12, lineHeight: 24 },

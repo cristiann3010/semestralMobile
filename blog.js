@@ -121,13 +121,21 @@ export default function BlogScreen({ onNavigateBack }) {
 
         {/* Categories Filter */}
         <View style={styles.categoriesContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-            {CATEGORIES.map((category) => (
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.categoriesScroll}
+            contentContainerStyle={styles.categoriesContentContainer}
+            bounces={true}
+          >
+            {CATEGORIES.map((category, index) => (
               <AnimatedButton
                 key={category}
                 style={[
                   styles.categoryButton,
-                  selectedCategory === category && styles.categoryButtonActive
+                  selectedCategory === category && styles.categoryButtonActive,
+                  index === 0 && styles.firstCategoryButton,
+                  index === CATEGORIES.length - 1 && styles.lastCategoryButton
                 ]}
                 onPress={() => handleCategoryPress(category)}
                 animationType="scale"
@@ -195,10 +203,34 @@ const styles = StyleSheet.create({
   heroTitle: { fontSize: 48, fontWeight: 'bold', color: '#9474FF', marginBottom: 20, fontFamily: 'Poppins', textAlign: 'center' },
   heroSubtitle: { fontSize: 16, color: '#cccccc', textAlign: 'center', lineHeight: 24, maxWidth: 320, fontFamily: 'Poppins' },
   categoriesContainer: { paddingVertical: 20, backgroundColor: '#1a0f2e' },
-  categoriesScroll: { paddingHorizontal: 20 },
-  categoryButton: { backgroundColor: 'rgba(255, 255, 255, 0.1)', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, marginRight: 12, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)' },
+  categoriesScroll: { 
+    flexGrow: 0,
+  },
+  categoriesContentContainer: {
+    alignItems: 'center',
+    paddingVertical: 5,
+    paddingHorizontal: 10, // Reduzido de 20 para 10
+  },
+  categoryButton: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+    paddingHorizontal: 14, // Reduzido de 16 para 14
+    paddingVertical: 10, 
+    borderRadius: 20, 
+    marginHorizontal: 5, // Reduzido de 12 para 5
+    borderWidth: 1, 
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  firstCategoryButton: {
+    marginLeft: 5, // Margem inicial pequena
+  },
+  lastCategoryButton: {
+    marginRight: 5, // Margem final pequena
+  },
   categoryButtonActive: { backgroundColor: '#9474FF', borderColor: '#9474FF' },
-  categoryText: { fontSize: 14, color: '#ffffff', fontWeight: '500', fontFamily: 'Poppins' },
+  categoryText: { fontSize: 14, color: '#ffffff', fontWeight: '500', fontFamily: 'Poppins', textAlign: 'center' },
   categoryTextActive: { color: '#ffffff', fontWeight: '600' },
   postsContainer: { paddingHorizontal: 20, paddingBottom: 20 },
   postCard: { backgroundColor: '#2a1f3d', borderRadius: 15, marginBottom: 25, overflow: 'hidden', elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 },

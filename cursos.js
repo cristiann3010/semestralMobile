@@ -57,7 +57,7 @@ const CURSOS_DATA = [
     descricao: 'Aprenda a desenvolver aplicações web completas usando tecnologias modernas como React, Node.js e bancos de dados.',
     preco: 'R$ 2.500,00',
     cargaHoraria: '200h',
-    modalidade: 'Online'
+    modalidade: 'Presencial'
   },
   {
     id: 2,
@@ -79,7 +79,7 @@ const CURSOS_DATA = [
     descricao: 'Estratégias de marketing digital, redes sociais, SEO e análise de dados para impulsionar negócios.',
     preco: 'R$ 1.200,00',
     cargaHoraria: '80h',
-    modalidade: 'Online'
+    modalidade: 'Presencial'
   },
   {
     id: 4,
@@ -90,7 +90,7 @@ const CURSOS_DATA = [
     descricao: 'Transforme dados em insights valiosos usando Python, SQL e ferramentas de visualização.',
     preco: 'R$ 3.000,00',
     cargaHoraria: '180h',
-    modalidade: 'Online'
+    modalidade: 'Presencial'
   },
   {
     id: 5,
@@ -112,7 +112,7 @@ const CURSOS_DATA = [
     descricao: 'Proteja sistemas e dados contra ameaças cibernéticas com técnicas avançadas de segurança.',
     preco: 'R$ 3.500,00',
     cargaHoraria: '220h',
-    modalidade: 'Online'
+    modalidade: ''
   }
 ];
 
@@ -256,9 +256,15 @@ const CursosScreen = ({ onNavigateBack }) => {
 
       {/* Filtros */}
       <View style={styles.filtrosContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtrosScroll}>
-          <View style={styles.filtroGroup}>
-            <Text style={styles.filtroLabel}>Categoria:</Text>
+        {/* Filtro de Categoria */}
+        <View style={styles.filtroRow}>
+          <Text style={styles.filtroLabel}>Categoria:</Text>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.filtroScroll}
+            contentContainerStyle={styles.filtroScrollContent}
+          >
             {CATEGORIAS.map((categoria) => (
               <TouchableOpacity
                 key={categoria}
@@ -276,12 +282,18 @@ const CursosScreen = ({ onNavigateBack }) => {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
         
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtrosScroll}>
-          <View style={styles.filtroGroup}>
-            <Text style={styles.filtroLabel}>Nível:</Text>
+        {/* Filtro de Nível */}
+        <View style={styles.filtroRow}>
+          <Text style={styles.filtroLabel}>Nível:</Text>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.filtroScroll}
+            contentContainerStyle={styles.filtroScrollContent}
+          >
             {NIVEIS.map((nivel) => (
               <TouchableOpacity
                 key={nivel}
@@ -299,8 +311,8 @@ const CursosScreen = ({ onNavigateBack }) => {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
       </View>
 
       {/* Lista de Cursos */}
@@ -357,17 +369,27 @@ const styles = StyleSheet.create({
   filtrosContainer: {
     backgroundColor: '#1a0f2e',
     paddingVertical: 15,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(139, 92, 246, 0.1)',
   },
-  filtrosScroll: { paddingHorizontal: 20 },
-  filtroGroup: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  filtroRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   filtroLabel: {
     fontSize: 14,
     color: '#cccccc',
-    marginRight: 10,
     fontWeight: '500',
-    minWidth: 70,
+    minWidth: 80,
+    marginRight: 10,
+  },
+  filtroScroll: {
+    flex: 1,
+  },
+  filtroScrollContent: {
+    paddingRight: 20,
   },
   filtroButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',

@@ -51,7 +51,7 @@ const Menu = ({ visible, onClose, onNavigate }) => {
             </View>
             <View style={styles.menuItems}>
               <MenuItem icon="🎓" text="Cursos Técnicos" onPress={() => handlePress('Cursos Técnicos', 'cursos')} />
-              <MenuItem icon="👥" text="Candidatos" onPress={() => handlePress('Candidatos')} />
+          
               <MenuItem icon="📝" text="Blog" onPress={() => handlePress('Blog', 'blog')} />
               <MenuItem icon="⚙️" text="Administração" onPress={() => handlePress('Administração', 'administracao')} />
             </View>
@@ -59,9 +59,9 @@ const Menu = ({ visible, onClose, onNavigate }) => {
               <TouchableOpacity style={styles.loginButton} onPress={() => handlePress('Login')} activeOpacity={0.8}>
                 <Text style={styles.loginButtonText}>Contatos</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.registerButton} onPress={() => handlePress('Cadastre-se')} activeOpacity={0.8}>
+              <TouchableOpacity style={styles.registerButton} onPress={() => handlePress('Saiba Mais')} activeOpacity={0.8}>
                 <View style={styles.registerButtonGradient}>
-                  <Text style={styles.registerButtonText}>Cadastre-se</Text>
+                  <Text style={styles.registerButtonText}>Saiba-Mais</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     shadowColor: '#8b5cf6', shadowOffset: { width: 5, height: 0 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 15, position: 'relative'
   },
   backgroundGradient: {
-    position: 'absolute', top: 0, left: 0, right: 0, height: '30%', backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    position: 'absolute', top: 0, Right: 0, right: 0, height: '30%', backgroundColor: 'rgba(139, 92, 246, 0.1)',
     borderBottomWidth: 1, borderBottomColor: 'rgba(139, 92, 246, 0.2)'
   },
   closeButton: { position: 'absolute', top: (StatusBar.currentHeight || 0) + 15, right: 20, zIndex: 10 },
