@@ -306,7 +306,7 @@ export default function App() {
               <Text style={styles.arrowText}>→</Text>
             </AnimatedButton>
           </View>
-
+          
           {/* Cards de Notícias - Agora com imagens reais */}
           <View style={styles.newsCardsContainer}>
             {NEWS_DATA.map((news) => (
