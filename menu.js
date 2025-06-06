@@ -56,7 +56,7 @@ const Menu = ({ visible, onClose, onNavigate }) => {
               <MenuItem icon="⚙️" text="Administração" onPress={() => handlePress('Administração', 'administracao')} />
             </View>
             <View style={styles.buttonsSection}>
-              <TouchableOpacity style={styles.loginButton} onPress={() => handlePress('Contatos')} activeOpacity={0.8}>
+              <TouchableOpacity style={styles.loginButton} onPress={() => handlePress('Contatos', 'contatos')} activeOpacity={0.8}>
                 <Text style={styles.loginButtonText}>Contatos</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.registerButton} onPress={() => handlePress('Saiba Mais', 'saibaMais')} activeOpacity={0.8}>

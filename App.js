@@ -6,17 +6,12 @@ import BlogScreen from './blog';
 import LoginScreen from './login';
 import CadastroScreen from './cadastro';
 import AdministracaoScreen from './administracao';
-import SaibaMaisScreen from './SaibaMaisScreen'; // IMPORTAÇÃO ADICIONADA
+import SaibaMaisScreen from './SaibaMaisScreen';
+import ContatosScreen from './contatos'; // IMPORTAÇÃO ADICIONADA
 
 const { width, height } = Dimensions.get('window');
-
-// Constantes
 const HERO_HEIGHT = height * 0.85;
-const OVERLAY_COLOR = 'rgba(26, 15, 46, 0.2)';
-const MENU_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const MENU_BORDER_COLOR = 'rgba(255, 255, 255, 0.2)';
 
-// Componente de Tela de Loading
 const LoadingScreen = () => {
   const fadeValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(0.8)).current;
@@ -26,16 +21,9 @@ const LoadingScreen = () => {
     Animated.parallel([
       Animated.timing(fadeValue, { toValue: 1, duration: 800, useNativeDriver: true }),
       Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, tension: 80, friction: 8 }),
-      Animated.loop(
-        Animated.timing(rotateValue, { toValue: 1, duration: 2000, useNativeDriver: true })
-      )
+      Animated.loop(Animated.timing(rotateValue, { toValue: 1, duration: 2000, useNativeDriver: true }))
     ]).start();
   }, []);
-
-  const rotateInterpolate = rotateValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg']
-  });
 
   return (
     <View style={styles.loadingContainer}>
@@ -43,100 +31,41 @@ const LoadingScreen = () => {
       <Animated.View style={[styles.loadingContent, { opacity: fadeValue, transform: [{ scale: scaleValue }] }]}>
         <Image source={require('./img/logo-removebg-preview 2.png')} style={styles.loadingLogo} resizeMode="contain" />
         <Text style={styles.loadingTitle}>AUGEBIT</Text>
-        <Animated.View style={[styles.loadingSpinner, { transform: [{ rotate: rotateInterpolate }] }]} />
+        <Animated.View style={[styles.loadingSpinner, { transform: [{ rotate: rotateValue.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }]} />
         <Text style={styles.loadingText}>Carregando...</Text>
       </Animated.View>
     </View>
   );
 };
 
-// Componente de botão animado
 const AnimatedButton = ({ style, children, onPress, animationType = 'scale' }) => {
-  const scaleValue = useRef(new Animated.Value(1)).current;
-  const opacityValue = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = () => {
-    const animation = animationType === 'scale' 
-      ? Animated.spring(scaleValue, { toValue: 0.95, useNativeDriver: true, tension: 150, friction: 8 })
-      : Animated.timing(opacityValue, { toValue: 0.7, duration: 150, useNativeDriver: true });
-    animation.start();
-  };
-
-  const handlePressOut = () => {
-    const animation = animationType === 'scale'
-      ? Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, tension: 150, friction: 8 })
-      : Animated.timing(opacityValue, { toValue: 1, duration: 150, useNativeDriver: true });
-    animation.start();
-  };
-
-  const animatedStyle = {
-    transform: animationType === 'scale' ? [{ scale: scaleValue }] : [],
-    opacity: animationType === 'opacity' ? opacityValue : 1,
-  };
+  const animValue = useRef(new Animated.Value(1)).current;
+  const handlePressIn = () => Animated.spring(animValue, { toValue: animationType === 'scale' ? 0.95 : 0.7, useNativeDriver: true }).start();
+  const handlePressOut = () => Animated.spring(animValue, { toValue: 1, useNativeDriver: true }).start();
 
   return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress} style={[style, { opacity: 1 }]}>
-      <Animated.View style={animatedStyle}>{children}</Animated.View>
+    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress} style={style}>
+      <Animated.View style={{ transform: animationType === 'scale' ? [{ scale: animValue }] : [], opacity: animationType === 'opacity' ? animValue : 1 }}>{children}</Animated.View>
     </Pressable>
   );
 };
 
-// Componente de menu animado
 const AnimatedMenuButton = ({ onPress, children }) => {
-  const rotateValue = useRef(new Animated.Value(0)).current;
-  const scaleValue = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = () => {
-    Animated.parallel([
-      Animated.timing(rotateValue, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.spring(scaleValue, { toValue: 0.9, useNativeDriver: true, tension: 150, friction: 8 })
-    ]).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.parallel([
-      Animated.timing(rotateValue, { toValue: 0, duration: 200, useNativeDriver: true }),
-      Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, tension: 150, friction: 8 })
-    ]).start();
-  };
-
-  const animatedStyle = {
-    transform: [
-      { rotate: rotateValue.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] }) },
-      { scale: scaleValue }
-    ],
-  };
+  const animValue = useRef(new Animated.Value(1)).current;
+  const handlePressIn = () => Animated.spring(animValue, { toValue: 0.9, useNativeDriver: true }).start();
+  const handlePressOut = () => Animated.spring(animValue, { toValue: 1, useNativeDriver: true }).start();
 
   return (
     <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress} style={styles.menuButton}>
-      <Animated.View style={animatedStyle}>{children}</Animated.View>
+      <Animated.View style={{ transform: [{ scale: animValue }] }}>{children}</Animated.View>
     </Pressable>
   );
 };
 
-// Dados estáticos - Agora com imagens
 const NEWS_DATA = [
-  { 
-    id: 1,
-    date: '15 Maio 2025', 
-    title: 'Novidades em Tecnologia', 
-    action: 'Leia Mais',
-    image: require('./img/new1.png')
-  },
-  { 
-    id: 2,
-    date: '15 Maio 2025', 
-    title: 'Novidades em Tecnologia',
-    action: 'Leia Mais',
-    image: require('./img/new2.png')
-  },
-  { 
-    id: 3,
-    date: '15 Maio 2025', 
-    title: 'Novidades em Tecnologia', 
-    action: 'Leia Mais',
-    image: require('./img/new3.png')
-  },
+  { id: 1, date: '15 Maio 2025', title: 'Novidades em Tecnologia', action: 'Leia Mais', image: require('./img/new1.png') },
+  { id: 2, date: '15 Maio 2025', title: 'Novidades em Tecnologia', action: 'Leia Mais', image: require('./img/new2.png') },
+  { id: 3, date: '15 Maio 2025', title: 'Novidades em Tecnologia', action: 'Leia Mais', image: require('./img/new3.png') },
 ];
 
 const FOOTER_LINKS = [
@@ -155,13 +84,11 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Simula carregamento inicial
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Callbacks memoizados
   const handleMenuPress = useCallback(() => setMenuVisible(true), []);
   const handleMenuClose = useCallback(() => setMenuVisible(false), []);
   const handleNavigate = useCallback((screen) => { setCurrentScreen(screen); setMenuVisible(false); }, []);
@@ -177,7 +104,6 @@ export default function App() {
     else console.log(`${linkText} pressionado`);
   }, []);
 
-  // Componentes memoizados
   const MenuIcon = useMemo(() => (
     <View style={styles.menuIconContainer}>
       {[...Array(3)].map((_, i) => <View key={i} style={styles.menuLine} />)}
@@ -193,75 +119,23 @@ export default function App() {
     </View>
   ), [handleMenuPress, MenuIcon]);
 
-  // Tela de Loading
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  if (isLoading) return <LoadingScreen />;
 
-  // Renderização condicional das telas
-  if (currentScreen === 'login') {
+  const screenComponents = {
+    login: () => <LoginScreen onNavigateBack={() => setCurrentScreen('home')} onLoginSuccess={handleLoginSuccess} />,
+    cadastro: () => <CadastroScreen onNavigateBack={() => setCurrentScreen('home')} onNavigateToLogin={handleNavigateToLogin} onRegisterSuccess={handleRegisterSuccess} />,
+    cursos: () => <CursosScreen onNavigateBack={() => setCurrentScreen('home')} />,
+    blog: () => <BlogScreen onNavigateBack={() => setCurrentScreen('home')} />,
+    administracao: () => <AdministracaoScreen onNavigateBack={() => setCurrentScreen('home')} />,
+    saibaMais: () => <SaibaMaisScreen onNavigateBack={() => setCurrentScreen('home')} />,
+    contatos: () => <ContatosScreen onNavigateBack={() => setCurrentScreen('home')} />, // ADICIONADO
+  };
+
+  if (currentScreen !== 'home') {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
-        <LoginScreen 
-          onNavigateBack={() => setCurrentScreen('home')} 
-          onLoginSuccess={handleLoginSuccess}
-        />
-        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
-      </SafeAreaView>
-    );
-  }
-
-  if (currentScreen === 'cadastro') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
-        <CadastroScreen 
-          onNavigateBack={() => setCurrentScreen('home')} 
-          onNavigateToLogin={handleNavigateToLogin}
-          onRegisterSuccess={handleRegisterSuccess}
-        />
-        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
-      </SafeAreaView>
-    );
-  }
-
-  if (currentScreen === 'cursos') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#0f0f0f" />
-        <CursosScreen onNavigateBack={() => setCurrentScreen('home')} />
-        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
-      </SafeAreaView>
-    );
-  }
-
-  if (currentScreen === 'blog') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
-        <BlogScreen onNavigateBack={() => setCurrentScreen('home')} />
-        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
-      </SafeAreaView>
-    );
-  }
-
-  if (currentScreen === 'administracao') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
-        <AdministracaoScreen onNavigateBack={() => setCurrentScreen('home')} />
-        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
-      </SafeAreaView>
-    );
-  }
-
-  // CORREÇÃO PRINCIPAL: Agora renderiza a SaibaMaisScreen corretamente
-  if (currentScreen === 'saibaMais') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
-        <SaibaMaisScreen onNavigateBack={() => setCurrentScreen('home')} />
+        {screenComponents[currentScreen]()}
         {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
       </SafeAreaView>
     );
@@ -296,20 +170,17 @@ export default function App() {
         </ImageBackground>
 
         <View style={styles.contentSections}>
-          {/* Seções de conteúdo */}
           {[
             { title: 'O que é a Augebit?', text: 'Augebit é uma empresa especializada em desenvolver e gerir projetos de design voltados para a produção de equipamentos e produtos de consumo final para industrias. A empresa conta com uma equipe qualificada e com um diferencial estratégico, onde os colaboradores recebem mentoria do diretor de arte da empresa, auxiliando para um melhor desenvolvimento técnico de cada projeto.' },
-            { title: 'What is lorem ?', text: 'Augebit oferece cursos presenciais pensados para quem quer ir além da teoria. Aprenda na prática com uma equipe experiente, em um ambiente que estimula a criatividade e o desenvolvimento técnico real. Se você quer crescer na área de design e indústria com apoio direto de profissionais qualificados, nossos cursos são pra você. Participe e descubra o diferencial Augebit de perto!' },
+            { title: 'O que oferecemos?', text: 'Augebit oferece cursos presenciais pensados para quem quer ir além da teoria. Aprenda na prática com uma equipe experiente, em um ambiente que estimula a criatividade e o desenvolvimento técnico real. Se você quer crescer na área de design e indústria com apoio direto de profissionais qualificados, nossos cursos são pra você. Participe e descubra o diferencial Augebit de perto!' },
             { title: 'What is lorem ipsum?', text: 'McClintock.Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.' }
           ].map((section, i) => (
             <View key={i} style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>{section.title}</Text>
               <Text style={styles.sectionText}>{section.text}</Text>
-              {section.extra && <Text style={styles.readMore}>{section.extra}</Text>}
             </View>
           ))}
 
-          {/* Seção Novidades */}
           <View style={styles.novidadesSection}>
             <Text style={styles.novidadesTitle}>NOVIDADES</Text>
             <AnimatedButton style={styles.verTodosButton} onPress={handleVerTodos} animationType="opacity">
@@ -318,7 +189,6 @@ export default function App() {
             </AnimatedButton>
           </View>
           
-          {/* Cards de Notícias - Agora com imagens reais */}
           <View style={styles.newsCardsContainer}>
             {NEWS_DATA.map((news) => (
               <View key={news.id} style={styles.newsCard}>
@@ -333,7 +203,6 @@ export default function App() {
           </View>
         </View>
 
-        {/* Footer */}
         <View style={styles.footerContainer}>
           <View style={styles.footerLogoContainer}>
             <Image source={require('./img/logo-removebg-preview 2.png')} style={styles.footerLogoImage} resizeMode="contain" />
@@ -373,7 +242,6 @@ export default function App() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#1a0f2e' },
   scrollView: { flex: 1 },
@@ -392,30 +260,30 @@ const styles = StyleSheet.create({
   fixedHeaderContainer: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 15, paddingTop: 50, backgroundColor: 'rgba(26, 15, 46, 0.95)', zIndex: 1000, elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 },
   headerSpacer: { height: 115 },
   logoContainer: { flexDirection: 'row', alignItems: 'center', height: 20 },
-  logoImage: { width: 200, height: 100 },
+  logoImage: { width: 150, height: 100},
   menuButton: { padding: 10, backgroundColor: MENU_BG_COLOR, borderRadius: 10, borderWidth: 1, borderColor: MENU_BORDER_COLOR },
   menuIconContainer: { width: 20, height: 15, justifyContent: 'space-between', alignItems: 'center' },
   menuLine: { width: 18, height: 2, backgroundColor: '#ffffff', borderRadius: 1 },
   mainContent: { flex: 1, paddingHorizontal: 30, paddingBottom: 50, zIndex: 5 },
   welcomeSection: { alignItems: 'center', marginTop: 80 },
   welcomeText: { fontSize: 56, fontWeight: '300', color: '#ffffff', marginBottom: 5, textAlign: 'center' },
-  augeBitText: { fontSize: 66, fontWeight: 'bold', color: '#9474FF', letterSpacing: 2, textAlign: 'center' },
+  augeBitText: { fontSize: 66, fontWeight: 'bold', color: '#9999FF', letterSpacing: 2, textAlign: 'center' },
   flexSpace: { flex: 1, minHeight: 60 },
   buttonsSection: { gap: 15, marginBottom: 20 },
-  primaryButton: { backgroundColor: '#6366f1', paddingVertical: 16, borderRadius: 25, alignItems: 'center', shadowColor: '#6366f1', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 },
+  primaryButton: { backgroundColor: '#9999FF', paddingVertical: 16, borderRadius: 25, alignItems: 'center', shadowColor: '#6366f1', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 },
   primaryButtonText: { fontSize: 18, fontWeight: '600', color: '#ffffff' },
   secondaryButton: { backgroundColor: '#000000', paddingVertical: 16, borderRadius: 25, alignItems: 'center', borderWidth: 2, borderColor: 'rgba(255, 255, 255, 0.2)', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 },
   secondaryButtonText: { fontSize: 18, fontWeight: '600', color: '#ffffff' },
   contentSections: { backgroundColor: '#1a0f2e', paddingHorizontal: 20, paddingVertical: 30, paddingBottom: 0 },
   sectionContainer: { marginBottom: 40, paddingBottom: 20, borderBottomWidth: 1, borderBottomColor: 'rgba(139, 92, 246, 0.2)' },
-  sectionTitle: { fontSize: 24, fontWeight: 'bold', color: '#9999FF', marginBottom: 15, textAlign: 'left' },
+  sectionTitle: { fontSize: 24, fontWeight: 'bold', color: '#6e6eff', marginBottom: 15, textAlign: 'left' },
   sectionText: { fontSize: 16, lineHeight: 24, color: '#ffffff', textAlign: 'justify', marginBottom: 10 },
   readMore: { fontSize: 16, lineHeight: 24, color: '#cccccc', textAlign: 'justify' },
   novidadesSection: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, paddingVertical: 20 },
   novidadesTitle: { fontSize: 28, fontWeight: 'bold', color: '#ffffff', letterSpacing: 1 },
   verTodosButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(139, 92, 246, 0.2)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 15, borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.3)' },
   verTodosText: { fontSize: 16, color: '#ffffff', marginRight: 8 },
-  arrowText: { fontSize: 16, color: '#8b5cf6', fontWeight: 'bold' },
+  arrowText: { fontSize: 16, color: '#4848d8', fontWeight: 'bold' },
   newsCardsContainer: { marginTop: 30, marginBottom: 30, gap: 25 },
   newsCard: { backgroundColor: '#000000', borderRadius: 15, overflow: 'hidden', elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 },
   newsImage: { width: '100%', height: 150 },
