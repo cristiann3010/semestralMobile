@@ -6,7 +6,7 @@ import BlogScreen from './blog';
 import LoginScreen from './login';
 import CadastroScreen from './cadastro';
 import AdministracaoScreen from './administracao';
-
+import SaibaMaisScreen from './SaibaMaisScreen'; // IMPORTAÇÃO ADICIONADA
 
 const { width, height } = Dimensions.get('window');
 
@@ -246,11 +246,22 @@ export default function App() {
     );
   }
 
- if (currentScreen === 'administracao') {
+  if (currentScreen === 'administracao') {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
         <AdministracaoScreen onNavigateBack={() => setCurrentScreen('home')} />
+        {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
+      </SafeAreaView>
+    );
+  }
+
+  // CORREÇÃO PRINCIPAL: Agora renderiza a SaibaMaisScreen corretamente
+  if (currentScreen === 'saibaMais') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
+        <SaibaMaisScreen onNavigateBack={() => setCurrentScreen('home')} />
         {menuVisible && <Menu visible={menuVisible} onClose={handleMenuClose} onNavigate={handleNavigate} />}
       </SafeAreaView>
     );
