@@ -1,427 +1,211 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  StatusBar, 
-  SafeAreaView, 
-  ScrollView, 
-  TextInput, 
-  Alert,
-  Animated,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform
-} from 'react-native';
+import React, { useState, useCallback, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, Image, KeyboardAvoidingView, Platform, ScrollView, Animated, Pressable } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
+// Componente de botão animado
+const AnimatedButton = ({ style, children, onPress, disabled = false }) => {
+  const scaleValue = useRef(new Animated.Value(1)).current;
 
-const ContatosScreen = ({ onNavigateBack }) => {
-  const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    assunto: '',
-    mensagem: ''
-  });
+  const handlePressIn = () => {
+    if (!disabled) {
+      Animated.spring(scaleValue, { toValue: 0.95, useNativeDriver: true, tension: 150, friction: 8 }).start();
+    }
+  };
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
+  const handlePressOut = () => {
+    if (!disabled) {
+      Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, tension: 150, friction: 8 }).start();
+    }
+  };
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      })
-    ]).start();
+  return (
+    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress} disabled={disabled} style={[style, disabled && styles.disabledButton]}>
+      <Animated.View style={{ transform: [{ scale: scaleValue }] }}>{children}</Animated.View>
+    </Pressable>
+  );
+};
+
+export default function LoginScreen({ onNavigateBack, onLoginSuccess }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = useCallback(async () => {
+    if (!email.trim() || !password.trim()) {
+      alert('Por favor, preencha todos os campos.');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    // Simulação de autenticação
+    setTimeout(() => {
+      setIsLoading(false);
+      if (email === 'admin@augebit.com' && password === '123456') {
+        alert('Login realizado com sucesso!');
+        onLoginSuccess && onLoginSuccess();
+      } else {
+        alert('Email ou senha incorretos.');
+      }
+    }, 1500);
+  }, [email, password, onLoginSuccess]);
+
+  const handleForgotPassword = useCallback(() => {
+    alert('Funcionalidade de recuperação de senha em desenvolvimento.');
   }, []);
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  const handleRegister = useCallback(() => {
+    alert('Redirecionando para tela de cadastro...');
+  }, []);
 
-  const handleSubmit = () => {
-    // Validação básica
-    if (!formData.nome || !formData.email || !formData.mensagem) {
-      Alert.alert('Erro', 'Por favor, preencha os campos obrigatórios (Nome, Email e Mensagem).');
-      return;
-    }
-
-    // Validação de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      Alert.alert('Erro', 'Por favor, insira um email válido.');
-      return;
-    }
-
-    Alert.alert(
-      'Sucesso', 
-      'Sua mensagem foi enviada com sucesso! Entraremos em contato em breve.',
-      [
-        { text: 'OK', onPress: () => {
-          setFormData({
-            nome: '',
-            email: '',
-            telefone: '',
-            assunto: '',
-            mensagem: ''
-          });
-        }}
-      ]
-    );
-  };
-
-  const contactInfoData = [
-    {
-      id: 1,
-      icon: '📞',
-      title: 'Telefone',
-      info: '+55 (047) 0000-0000',
-      description: 'Segunda a Sexta, 8h às 18h'
-    },
-    {
-      id: 2,
-      icon: '✉️',
-      title: 'Email',
-      info: 'augebit.10@gmail.com',
-      description: 'Resposta em até 24h'
-    },
-    {
-      id: 3,
-      icon: '📍',
-      title: 'Endereço',
-      info: 'Rua Exemplo, 123',
-      description: 'Centro - Cidade, SC'
-    },
-    {
-      id: 4,
-      icon: '🕐',
-      title: 'Horário',
-      info: 'Seg - Sex: 8h às 18h',
-      description: 'Sáb: 8h às 12h'
-    }
-  ];
+  const isFormValid = email.trim() && password.trim() && !isLoading;
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
       
-      {/* Header */}
+      {/* Header com botão voltar */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={onNavigateBack}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={onNavigateBack} activeOpacity={0.7}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>CONTATOS</Text>
+        <Text style={styles.headerTitle}>Login</Text>
         <View style={styles.headerSpacer} />
       </View>
 
-      <KeyboardAvoidingView 
-        style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <ScrollView 
-          style={styles.scrollView} 
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
-          <Animated.View 
-            style={[
-              styles.content, 
-              { 
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }]
-              }
-            ]}
-          >
-            {/* Seção de Informações de Contato */}
-            <View style={styles.contactInfoSection}>
-              <Text style={styles.sectionTitle}>Entre em Contato</Text>
-              <Text style={styles.sectionSubtitle}>
-                Estamos aqui para ajudar você. Entre em contato conosco através dos canais abaixo.
-              </Text>
-              
-              <View style={styles.contactCardsContainer}>
-                {contactInfoData.map((contact) => (
-                  <View key={contact.id} style={styles.contactCard}>
-                    <View style={styles.contactCardHeader}>
-                      <Text style={styles.contactIcon}>{contact.icon}</Text>
-                      <Text style={styles.contactTitle}>{contact.title}</Text>
-                    </View>
-                    <Text style={styles.contactInfo}>{contact.info}</Text>
-                    <Text style={styles.contactDescription}>{contact.description}</Text>
-                  </View>
-                ))}
-              </View>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardContainer}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Image source={require('./img/logo-removebg-preview 2.png')} style={styles.logoImage} resizeMode="contain" />
+          </View>
+
+          {/* Welcome Text */}
+          <View style={styles.welcomeContainer}>
+            <Text style={styles.welcomeText}>Bem-vindo de volta!</Text>
+            <Text style={styles.subtitleText}>Faça login para continuar</Text>
+          </View>
+
+          {/* Form Container */}
+          <View style={styles.formContainer}>
+            
+            {/* Email Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Digite seu email"
+                placeholderTextColor="#666"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
             </View>
 
-            {/* Formulário de Contato */}
-            <View style={styles.formSection}>
-              <Text style={styles.formTitle}>Envie uma Mensagem</Text>
-              
-              <View style={styles.formContainer}>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Nome *</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Seu nome completo"
-                    placeholderTextColor="#999"
-                    value={formData.nome}
-                    onChangeText={(text) => handleInputChange('nome', text)}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Email *</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="seu.email@exemplo.com"
-                    placeholderTextColor="#999"
-                    value={formData.email}
-                    onChangeText={(text) => handleInputChange('email', text)}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Telefone</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="(00) 00000-0000"
-                    placeholderTextColor="#999"
-                    value={formData.telefone}
-                    onChangeText={(text) => handleInputChange('telefone', text)}
-                    keyboardType="phone-pad"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Assunto</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Sobre o que você gostaria de falar?"
-                    placeholderTextColor="#999"
-                    value={formData.assunto}
-                    onChangeText={(text) => handleInputChange('assunto', text)}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Mensagem *</Text>
-                  <TextInput
-                    style={[styles.textInput, styles.textArea]}
-                    placeholder="Escreva sua mensagem aqui..."
-                    placeholderTextColor="#999"
-                    value={formData.mensagem}
-                    onChangeText={(text) => handleInputChange('mensagem', text)}
-                    multiline
-                    numberOfLines={4}
-                    textAlignVertical="top"
-                  />
-                </View>
-
-                <Text style={styles.requiredNote}>* Campos obrigatórios</Text>
-
-                <TouchableOpacity 
-                  style={styles.submitButton} 
-                  onPress={handleSubmit}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.submitButtonText}>Enviar Mensagem</Text>
+            {/* Password Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Senha</Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Digite sua senha"
+                  placeholderTextColor="#666"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                <TouchableOpacity style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)} activeOpacity={0.7}>
+                  <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
                 </TouchableOpacity>
               </View>
             </View>
-          </Animated.View>
+
+            {/* Forgot Password */}
+            <TouchableOpacity style={styles.forgotPasswordContainer} onPress={handleForgotPassword} activeOpacity={0.7}>
+              <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
+            </TouchableOpacity>
+
+            {/* Login Button */}
+            <AnimatedButton 
+              style={[styles.loginButton, !isFormValid && styles.disabledButton]} 
+              onPress={handleLogin} 
+              disabled={!isFormValid}
+            >
+              <Text style={[styles.loginButtonText, !isFormValid && styles.disabledButtonText]}>
+                {isLoading ? 'Entrando...' : 'Entrar'}
+              </Text>
+            </AnimatedButton>
+
+            {/* Divider */}
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>ou</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Social Login Buttons */}
+            <AnimatedButton style={styles.socialButton} onPress={() => alert('Login com Google em desenvolvimento')}>
+              <Text style={styles.socialButtonText}>📧 Continuar com Google</Text>
+            </AnimatedButton>
+
+            <AnimatedButton style={styles.socialButton} onPress={() => alert('Login com Facebook em desenvolvimento')}>
+              <Text style={styles.socialButtonText}>📘 Continuar com Facebook</Text>
+            </AnimatedButton>
+
+            {/* Register Link */}
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>Não tem uma conta? </Text>
+              <TouchableOpacity onPress={handleRegister} activeOpacity={0.7}>
+                <Text style={styles.registerLink}>Cadastre-se</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1a0f2e',
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    paddingTop: 50,
-    backgroundColor: '#1a0f2e',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(139, 92, 246, 0.2)',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.4)',
-  },
-  backButtonText: {
-    fontSize: 20,
-    color: '#ffffff',
-    fontWeight: 'bold',
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    textAlign: 'center',
-    letterSpacing: 2,
-  },
-  headerSpacer: {
-    width: 40,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 40,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  contactInfoSection: {
-    marginTop: 30,
-    marginBottom: 40,
-  },
-  sectionTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#9999FF',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  sectionSubtitle: {
-    fontSize: 16,
-    color: '#cccccc',
-    textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 24,
-  },
-  contactCardsContainer: {
-    gap: 15,
-  },
-  contactCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 15,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.2)',
-  },
-  contactCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  contactIcon: {
-    fontSize: 24,
-    marginRight: 12,
-  },
-  contactTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  contactInfo: {
-    fontSize: 16,
-    color: '#9999FF',
-    fontWeight: '600',
-    marginBottom: 5,
-  },
-  contactDescription: {
-    fontSize: 14,
-    color: '#cccccc',
-  },
-  formSection: {
-    marginBottom: 20,
-  },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#9999FF',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  formContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 20,
-    padding: 25,
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.2)',
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 16,
-    color: '#ffffff',
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  textInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#ffffff',
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
-  },
-  textArea: {
-    height: 100,
-    paddingTop: 15,
-  },
-  requiredNote: {
-    fontSize: 14,
-    color: '#cccccc',
-    textAlign: 'center',
-    marginBottom: 25,
-    fontStyle: 'italic',
-  },
-  submitButton: {
-    backgroundColor: '#8b5cf6',
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: 'center',
-    shadowColor: '#8b5cf6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  submitButtonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#ffffff',
-  },
+  container: { flex: 1, backgroundColor: '#1a0f2e' },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 15, paddingTop: 50, backgroundColor: '#1a0f2e' },
+  backButton: { padding: 10, marginRight: 10 },
+  backButtonText: { fontSize: 24, color: '#ffffff', fontWeight: 'bold' },
+  headerTitle: { fontSize: 20, fontWeight: '600', color: '#ffffff', fontFamily: 'Poppins-SemiBold' },
+  headerSpacer: { flex: 1 },
+  keyboardContainer: { flex: 1 },
+  scrollContainer: { flexGrow: 1, paddingHorizontal: 20 },
+  logoContainer: { alignItems: 'center', marginTop: 20, marginBottom: 30 },
+  logoImage: { width: 180, height: 80 },
+  welcomeContainer: { alignItems: 'center', marginBottom: 40 },
+  welcomeText: { fontSize: 28, fontWeight: 'bold', color: '#ffffff', marginBottom: 8, fontFamily: 'Poppins-Bold' },
+  subtitleText: { fontSize: 16, color: '#cccccc', fontFamily: 'Poppins-Regular' },
+  formContainer: { flex: 1, paddingBottom: 30 },
+  inputContainer: { marginBottom: 20 },
+  inputLabel: { fontSize: 16, fontWeight: '600', color: '#ffffff', marginBottom: 8, fontFamily: 'Poppins-SemiBold' },
+  textInput: { backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: '#ffffff', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)', fontFamily: 'Poppins-Regular' },
+  passwordContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)' },
+  passwordInput: { flex: 1, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: '#ffffff', fontFamily: 'Poppins-Regular' },
+  eyeButton: { paddingHorizontal: 16, paddingVertical: 14 },
+  eyeIcon: { fontSize: 18 },
+  forgotPasswordContainer: { alignItems: 'flex-end', marginBottom: 30 },
+  forgotPasswordText: { fontSize: 14, color: '#8b5cf6', fontFamily: 'Poppins-Medium' },
+  loginButton: { backgroundColor: '#6366f1', paddingVertical: 16, borderRadius: 12, alignItems: 'center', shadowColor: '#6366f1', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8, marginBottom: 30 },
+  loginButtonText: { fontSize: 18, fontWeight: '600', color: '#ffffff', fontFamily: 'Poppins-SemiBold' },
+  disabledButton: { backgroundColor: '#4a4a4a', shadowOpacity: 0 },
+  disabledButtonText: { color: '#888888' },
+  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: 'rgba(255, 255, 255, 0.2)' },
+  dividerText: { marginHorizontal: 16, fontSize: 14, color: '#cccccc', fontFamily: 'Poppins-Regular' },
+  socialButton: { backgroundColor: 'rgba(255, 255, 255, 0.1)', paddingVertical: 14, borderRadius: 12, alignItems: 'center', marginBottom: 12, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)' },
+  socialButtonText: { fontSize: 16, color: '#ffffff', fontFamily: 'Poppins-Medium' },
+  registerContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20 },
+  registerText: { fontSize: 16, color: '#cccccc', fontFamily: 'Poppins-Regular' },
+  registerLink: { fontSize: 16, color: '#8b5cf6', fontWeight: '600', fontFamily: 'Poppins-SemiBold' },
 });
-
-export default ContatosScreen;
