@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert,
 
 const { width } = Dimensions.get('window');
 
-const ContatosScreen = ({ onNavigateBack }) => {
+const ContatosScreen
+ = ({ onNavigateBack }) => {
   const [formData, setFormData] = useState({ nome: '', email: '', assunto: '', mensagem: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
