@@ -28,61 +28,60 @@ export default function CadastroScreen({ onNavigateBack, onNavigateToLogin, onRe
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [telefone, setTelefone] = useState('');
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
   const handleRegister = useCallback(async () => {
-    if (!nome.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
+  if (!nome.trim() || !email.trim() || !password.trim() ) {
+    alert('Por favor, preencha todos os campos obrigatórios.');
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      alert('As senhas não coincidem.');
-      return;
-    }
 
-    if (password.length < 6) {
-      alert('A senha deve ter pelo menos 6 caracteres.');
-      return;
-    }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert('Por favor, insira um email válido.');
-      return;
-    }
+  if (password.length < 6) {
+    alert('A senha deve ter pelo menos 6 caracteres.');
+    return;
+  }
 
-    setIsLoading(true);
-    
-    // Simulação de cadastro
-    setTimeout(() => {
-      setIsLoading(false);
-      alert('Cadastro realizado com sucesso!');
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Por favor, insira um email válido.');
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const response = await fetch('http://SEU_IP_OU_LOCALHOST:3000/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert(data.message || 'Cadastro realizado com sucesso!');
       onRegisterSuccess && onRegisterSuccess();
-    }, 1500);
-  }, [nome, email, password, confirmPassword, onRegisterSuccess]);
-
-  const formatTelefone = (text) => {
-    const cleaned = text.replace(/\D/g, '');
-    const match = cleaned.match(/^(\d{0,2})(\d{0,5})(\d{0,4})$/);
-    if (match) {
-      return !match[2] ? match[1] : `(${match[1]}) ${match[2]}${match[3] ? `-${match[3]}` : ''}`;
+    } else {
+      alert(data.error || 'Erro ao cadastrar.');
     }
-    return text;
-  };
+  } catch (error) {
+    alert('Erro na conexão com o servidor.');
+    console.error(error);
+  } finally {
+    setIsLoading(false);
+  }
+}, [nome, email, password, onRegisterSuccess]);
 
-  const handleTelefoneChange = (text) => {
-    const formatted = formatTelefone(text);
-    if (formatted.replace(/\D/g, '').length <= 11) {
-      setTelefone(formatted);
-    }
-  };
 
-  const isFormValid = nome.trim() && email.trim() && password.trim() && confirmPassword.trim() && !isLoading;
+
+
+
+  const isFormValid = nome.trim() && email.trim() && password.trim() && !isLoading;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -143,19 +142,7 @@ export default function CadastroScreen({ onNavigateBack, onNavigateToLogin, onRe
               />
             </View>
 
-            {/* Telefone Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Telefone</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="(11) 99999-9999"
-                placeholderTextColor="#666"
-                value={telefone}
-                onChangeText={handleTelefoneChange}
-                keyboardType="numeric"
-                maxLength={15}
-              />
-            </View>
+            
 
             {/* Password Input */}
             <View style={styles.inputContainer}>
@@ -177,25 +164,8 @@ export default function CadastroScreen({ onNavigateBack, onNavigateToLogin, onRe
               </View>
             </View>
 
-            {/* Confirm Password Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Confirmar Senha *</Text>
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Confirme sua senha"
-                  placeholderTextColor="#666"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!showConfirmPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-                <TouchableOpacity style={styles.eyeButton} onPress={() => setShowConfirmPassword(!showConfirmPassword)} activeOpacity={0.7}>
-                  <Text style={styles.eyeIcon}>{showConfirmPassword ? '👁️' : '👁️‍🗨️'}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+            
+            
 
             {/* Register Button */}
             <AnimatedButton 

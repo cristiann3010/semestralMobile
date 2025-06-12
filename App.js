@@ -300,8 +300,8 @@ export default function App() {
           {/* Seções de conteúdo */}
           {[
             { title: 'O que é a Augebit?', text: 'Augebit é uma empresa especializada em desenvolver e gerir projetos de design voltados para a produção de equipamentos e produtos de consumo final para industrias. A empresa conta com uma equipe qualificada e com um diferencial estratégico, onde os colaboradores recebem mentoria do diretor de arte da empresa, auxiliando para um melhor desenvolvimento técnico de cada projeto.' },
-            { title: 'What is lorem ?', text: 'Augebit oferece cursos presenciais pensados para quem quer ir além da teoria. Aprenda na prática com uma equipe experiente, em um ambiente que estimula a criatividade e o desenvolvimento técnico real. Se você quer crescer na área de design e indústria com apoio direto de profissionais qualificados, nossos cursos são pra você. Participe e descubra o diferencial Augebit de perto!' },
-            { title: 'What is lorem ipsum?', text: 'McClintock.Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.' }
+            { title: 'Cursos Presenciais Augebit ?', text: 'Augebit oferece cursos presenciais pensados para quem quer ir além da teoria. Aprenda na prática com uma equipe experiente, em um ambiente que estimula a criatividade e o desenvolvimento técnico real. Se você quer crescer na área de design e indústria com apoio direto de profissionais qualificados, nossos cursos são pra você. Participe e descubra o diferencial Augebit de perto!' },
+            { title: 'Compromisso com o Conhecimento', text: 'A AUGEBIT é uma empresa dedicada à capacitação profissional por meio de cursos presenciais. Com foco na excelência e no desenvolvimento contínuo, oferece experiências de aprendizado que aproximam teoria e prática, preparando seus participantes para os desafios do mercado.' }
           ].map((section, i) => (
             <View key={i} style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>{section.title}</Text>
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
   loadingText: { fontSize: 16, color: '#ffffff', opacity: 0.8 },
   
   // Estilos existentes
-  fixedHeaderContainer: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 15, paddingTop: 50, backgroundColor: 'rgba(26, 15, 46, 0.95)', zIndex: 1000, elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 },
+  fixedHeaderContainer: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',                                                                                                                                      Horizontal: 20, paddingVertical: 15, paddingTop: 50, backgroundColor: 'rgba(26, 15, 46, 0.95)', zIndex: 1000, elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 },
   headerSpacer: { height: 115 },
   logoContainer: { flexDirection: 'row', alignItems: 'center', height: 20 },
   logoImage: { width: 200, height: 100 },

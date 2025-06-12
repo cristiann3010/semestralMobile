@@ -9,7 +9,7 @@ import {
   Dimensions,
   ScrollView,
   Animated,
-  Pressable,
+  Pressable, 
   Image,
 } from 'react-native';
 

@@ -15,11 +15,16 @@
     "@react-navigation/native": "^7.1.9",
     "@react-navigation/native-stack": "^7.3.13",
     "@react-navigation/stack": "^7.3.2",
-    "expo": "53.0.10",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "expo": "^53.0.10",
     "expo-status-bar": "~2.2.3",
-    "react": "19.0.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.1",
+    "react": "^19.0.0",
     "react-dom": "19.0.0",
-    "react-native": "0.79.3",
+    "react-native": "^0.79.3",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-reanimated": "^3.17.5",
     "react-native-safe-area-context": "^5.4.0",
@@ -29,5 +34,18 @@
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
-  "private": true
+  "private": true,
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cristiann3010/semestralMobile.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/cristiann3010/semestralMobile/issues"
+  },
+  "homepage": "https://github.com/cristiann3010/semestralMobile#readme"
 }

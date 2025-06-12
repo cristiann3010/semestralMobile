@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Stat
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configuração da API
-const API_BASE_URL = 'http://192.168.1.7:3000'; // Mude para seu IP se testar no dispositivo físico
+const API_BASE_URL = 'http://172.31.112.1:3000'; // Mude para seu IP se testar no dispositivo físico
 // Para dispositivo físico, use: 'http://SEU_IP:3000' (ex: http://192.168.1.100:3000)
 
 // Componente de botão animado
