@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -21,6 +20,7 @@ const SaibaMaisScreen = ({ onNavigateBack }) => {
   const fadeValue = useRef(new Animated.Value(0)).current;
   const slideValue = useRef(new Animated.Value(50)).current;
   const scaleValue = useRef(new Animated.Value(0.9)).current;
+  const headerGlowValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -41,6 +41,22 @@ const SaibaMaisScreen = ({ onNavigateBack }) => {
         friction: 8,
       }),
     ]).start();
+
+    // Animação de brilho do header
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(headerGlowValue, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(headerGlowValue, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
   }, []);
 
   // Dados da empresa
@@ -105,23 +121,68 @@ const SaibaMaisScreen = ({ onNavigateBack }) => {
     },
   ];
 
-
-  
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
+      <StatusBar barStyle="light-content" backgroundColor="#0f0419" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={onNavigateBack}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backButtonText}>← Voltar</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Saiba Mais</Text>
-        <View style={styles.headerSpacer} />
+      {/* Header Melhorado */}
+      <View style={styles.headerContainer}>
+        {/* Fundo com gradiente e efeitos */}
+        <View style={styles.headerBackground}>
+          {/* Efeito de brilho animado */}
+          <Animated.View 
+            style={[
+              styles.headerGlow,
+              {
+                opacity: headerGlowValue.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.3, 0.8],
+                }),
+              }
+            ]} 
+          />
+          
+          {/* Pontos decorativos */}
+          <View style={styles.decorativeDotsLeft}>
+            <View style={[styles.dot, { backgroundColor: '#9474FF' }]} />
+            <View style={[styles.dot, { backgroundColor: '#6366f1' }]} />
+            <View style={[styles.dot, { backgroundColor: '#8b5cf6' }]} />
+          </View>
+          
+          <View style={styles.decorativeDotsRight}>
+            <View style={[styles.dot, { backgroundColor: '#a855f7' }]} />
+            <View style={[styles.dot, { backgroundColor: '#7c3aed' }]} />
+            <View style={[styles.dot, { backgroundColor: '#6366f1' }]} />
+          </View>
+        </View>
+
+        <View style={styles.headerContent}>
+          {/* Botão de voltar melhorado */}
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={onNavigateBack}
+            activeOpacity={0.7}
+          >
+            <View style={styles.backButtonContainer}>
+              <Text style={styles.backButtonIcon}>←</Text>
+              <Text style={styles.backButtonText}>Voltar</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Título com efeito especial */}
+          <View style={styles.titleContainer}>
+            <Text style={styles.headerTitle}>Saiba Mais</Text>
+            <View style={styles.titleUnderline} />
+          </View>
+
+          {/* Espaçador para manter alinhamento */}
+          <View style={styles.headerSpacer} />
+        </View>
+
+        {/* Linha de separação com gradiente */}
+        <View style={styles.headerSeparator}>
+          <View style={styles.separatorLine} />
+        </View>
       </View>
 
       <ScrollView 
@@ -279,33 +340,126 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a0f2e',
   },
-  header: {
+  
+  // Estilos do Header Melhorado
+  headerContainer: {
+    position: 'relative',
+    zIndex: 1000,
+  },
+  headerBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#0f0419',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(139, 92, 246, 0.3)',
+  },
+  headerGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    borderRadius: 0,
+  },
+  decorativeDotsLeft: {
+    position: 'absolute',
+    left: 10,
+    top: '50%',
+    flexDirection: 'column',
+    gap: 4,
+  },
+  decorativeDotsRight: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    flexDirection: 'column',
+    gap: 4,
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    opacity: 0.6,
+  },
+  headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
     paddingTop: 50,
-    backgroundColor: '#4848d8',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(139, 92, 246, 0.2)',
+    position: 'relative',
+    zIndex: 2,
   },
   backButton: {
-    padding: 10,
+    padding: 8,
+  },
+  backButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+  },
+  backButtonIcon: {
+    fontSize: 18,
+    color: '#9474FF',
+    marginRight: 6,
+    fontWeight: 'bold',
   },
   backButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#9474FF',
     fontWeight: '600',
   },
+  titleContainer: {
+    alignItems: 'center',
+    position: 'relative',
+  },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#ffffff',
+    textShadowColor: 'rgba(139, 92, 246, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+    letterSpacing: 1,
+  },
+  titleUnderline: {
+    width: 40,
+    height: 3,
+    backgroundColor: '#9474FF',
+    borderRadius: 2,
+    marginTop: 4,
+    shadowColor: '#9474FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
   },
   headerSpacer: {
     width: 60,
   },
+  headerSeparator: {
+    height: 1,
+    position: 'relative',
+  },
+  separatorLine: {
+    height: 1,
+    backgroundColor: 'rgba(139, 92, 246, 0.4)',
+    shadowColor: '#9474FF',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+  },
+
+  // Estilos restantes (mantidos iguais)
   scrollView: {
     flex: 1,
   },

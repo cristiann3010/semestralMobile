@@ -39,12 +39,28 @@ const ContatosScreen
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
       
+      {/* Header Fixo e Melhorado */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onNavigateBack}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Contatos</Text>
-        <View style={styles.placeholder} />
+        <View style={styles.headerBackground} />
+        <View style={styles.headerContent}>
+          <TouchableOpacity style={styles.backButton} onPress={onNavigateBack}>
+            <Text style={styles.backButtonText}>←</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.headerTitleContainer}>
+            <Text style={styles.headerTitle}>Contatos</Text>
+            <Text style={styles.headerSubtitle}>Entre em contato conosco</Text>
+          </View>
+          
+          <View style={styles.headerDecoration}>
+            <View style={styles.decorationDot} />
+            <View style={[styles.decorationDot, styles.decorationDotSecondary]} />
+            <View style={[styles.decorationDot, styles.decorationDotTertiary]} />
+          </View>
+        </View>
+        
+        {/* Efeito de gradiente na parte inferior do header */}
+        <View style={styles.headerGradient} />
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -107,31 +123,216 @@ const ContatosScreen
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1a0f2e' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 20 },
-  backButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(139, 92, 246, 0.2)', alignItems: 'center', justifyContent: 'center' },
-  backButtonText: { fontSize: 20, color: '#ffffff' },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#ffffff' },
-  placeholder: { width: 40 },
-  scrollView: { flex: 1 },
-  contactSection: { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 15, margin: 20, padding: 20 },
-  contactItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: 'rgba(255, 255, 255, 0.1)' },
-  contactIcon: { width: 50, height: 50, borderRadius: 25, backgroundColor: 'rgba(139, 92, 246, 0.2)', alignItems: 'center', justifyContent: 'center', marginRight: 15 },
-  contactIconText: { fontSize: 20 },
-  contactInfo: { flex: 1 },
-  contactTitle: { fontSize: 16, fontWeight: '600', color: '#ffffff', marginBottom: 5 },
-  contactDescription: { fontSize: 14, color: 'rgba(255, 255, 255, 0.7)' },
-  formSection: { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 15, margin: 20, padding: 20 },
-  formTitle: { fontSize: 20, fontWeight: '600', color: '#ffffff', textAlign: 'center', marginBottom: 20 },
-  formGroup: { marginBottom: 15 },
-  label: { fontSize: 14, fontWeight: '500', color: '#ffffff', marginBottom: 8 },
-  input: { backgroundColor: 'rgba(255, 255, 255, 0.1)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 10, padding: 15, fontSize: 16, color: '#ffffff' },
-  textArea: { height: 100, textAlignVertical: 'top' },
-  submitButton: { backgroundColor: '#8b5cf6', borderRadius: 25, paddingVertical: 15, alignItems: 'center', marginTop: 10 },
-  submitButtonDisabled: { opacity: 0.7 },
-  submitButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
-  footer: { alignItems: 'center', paddingVertical: 30 },
-  footerText: { fontSize: 12, color: 'rgba(255, 255, 255, 0.5)' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#1a0f2e' 
+  },
+  
+  // Header melhorado e fixo
+  header: {
+    position: 'relative',
+    backgroundColor: '#1a0f2e',
+    paddingTop: 15,
+    paddingBottom: 20,
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
+    justifyContent: 'center',
+  },
+  headerBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'linear-gradient(135deg, #1a0f2e 0%, #2d1b4e 100%)',
+    opacity: 0.9,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  backButton: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    backgroundColor: 'rgba(139, 92, 246, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.4)',
+  },
+  backButtonText: {
+    fontSize: 22,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  headerTitleContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 15,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    textAlign: 'center',
+    marginBottom: 2,
+    textShadowColor: 'rgba(139, 92, 246, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  headerSubtitle: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.7)',
+    textAlign: 'center',
+    fontWeight: '400',
+  },
+  headerDecoration: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  decorationDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#8b5cf6',
+    marginVertical: 2,
+  },
+  decorationDotSecondary: {
+    backgroundColor: 'rgba(139, 92, 246, 0.6)',
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+  },
+  decorationDotTertiary: {
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+  },
+  headerGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(139, 92, 246, 0.6)',
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+  },
+  
+  // Resto dos estilos permanecem iguais
+  scrollView: { 
+    flex: 1 
+  },
+  contactSection: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+    borderRadius: 15, 
+    margin: 20, 
+    padding: 20,
+    marginTop: 10, // Reduzido para compensar o header maior
+  },
+  contactItem: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    paddingVertical: 15, 
+    borderBottomWidth: 1, 
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)' 
+  },
+  contactIcon: { 
+    width: 50, 
+    height: 50, 
+    borderRadius: 25, 
+    backgroundColor: 'rgba(139, 92, 246, 0.2)', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    marginRight: 15 
+  },
+  contactIconText: { 
+    fontSize: 20 
+  },
+  contactInfo: { 
+    flex: 1 
+  },
+  contactTitle: { 
+    fontSize: 16, 
+    fontWeight: '600', 
+    color: '#ffffff', 
+    marginBottom: 5 
+  },
+  contactDescription: { 
+    fontSize: 14, 
+    color: 'rgba(255, 255, 255, 0.7)' 
+  },
+  formSection: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+    borderRadius: 15, 
+    margin: 20, 
+    padding: 20 
+  },
+  formTitle: { 
+    fontSize: 20, 
+    fontWeight: '600', 
+    color: '#ffffff', 
+    textAlign: 'center', 
+    marginBottom: 20 
+  },
+  formGroup: { 
+    marginBottom: 15 
+  },
+  label: { 
+    fontSize: 14, 
+    fontWeight: '500', 
+    color: '#ffffff', 
+    marginBottom: 8 
+  },
+  input: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+    borderWidth: 1, 
+    borderColor: 'rgba(255, 255, 255, 0.2)', 
+    borderRadius: 10, 
+    padding: 15, 
+    fontSize: 16, 
+    color: '#ffffff' 
+  },
+  textArea: { 
+    height: 100, 
+    textAlignVertical: 'top' 
+  },
+  submitButton: { 
+    backgroundColor: '#8b5cf6', 
+    borderRadius: 25, 
+    paddingVertical: 15, 
+    alignItems: 'center', 
+    marginTop: 10 
+  },
+  submitButtonDisabled: { 
+    opacity: 0.7 
+  },
+  submitButtonText: { 
+    color: '#ffffff', 
+    fontSize: 16, 
+    fontWeight: '600' 
+  },
+  footer: { 
+    alignItems: 'center', 
+    paddingVertical: 30 
+  },
+  footerText: { 
+    fontSize: 12, 
+    color: 'rgba(255, 255, 255, 0.5)' 
+  },
 });
 
 export default ContatosScreen;
