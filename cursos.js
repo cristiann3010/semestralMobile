@@ -1,155 +1,165 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  StatusBar,
-  SafeAreaView,
-  Dimensions,
-  ScrollView,
-  Animated,
-  Pressable, 
-  Image,
+  View, Text, ScrollView, TouchableOpacity, Modal, TextInput, StyleSheet,
+  Pressable, FlatList, KeyboardAvoidingView, Platform
 } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
-
-// Componente de botão animado
-const AnimatedButton = ({ style, children, onPress, animationType = 'scale' }) => {
-  const scaleValue = useRef(new Animated.Value(1)).current;
-  const opacityValue = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = () => {
-    const animation = animationType === 'scale' 
-      ? Animated.spring(scaleValue, { toValue: 0.95, useNativeDriver: true, tension: 150, friction: 8 })
-      : Animated.timing(opacityValue, { toValue: 0.7, duration: 150, useNativeDriver: true });
-    animation.start();
-  };
-
-  const handlePressOut = () => {
-    const animation = animationType === 'scale'
-      ? Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, tension: 150, friction: 8 })
-      : Animated.timing(opacityValue, { toValue: 1, duration: 150, useNativeDriver: true });
-    animation.start();
-  };
-
-  const animatedStyle = {
-    transform: animationType === 'scale' ? [{ scale: scaleValue }] : [],
-    opacity: animationType === 'opacity' ? opacityValue : 1,
-  };
-
-  return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress} style={[style, { opacity: 1 }]}>
-      <Animated.View style={animatedStyle}>{children}</Animated.View>
-    </Pressable>
-  );
-};
-
-// Dados dos cursos
 const CURSOS_DATA = [
   {
-    id: 1,
-    titulo: 'Desenvolvimento Web Full Stack',
-    duracao: '6 meses',
+    id: 1, 
+    titulo: 'Técnico em Automação Industrial', 
+    duracao: '6 meses', 
     nivel: 'Intermediário',
-    categoria: 'Tecnologia',
-    descricao: 'Aprenda a desenvolver aplicações web completas usando tecnologias modernas como React, Node.js e bancos de dados.',
-    preco: 'R$ 2.500,00',
-    cargaHoraria: '200h',
-    modalidade: 'Presencial'
+    categoria: 'Tecnologia', 
+    descricao: 'Atua com elétrica, eletrônica e programação para tornar os processos mais eficientes e seguros.',
+    cargaHoraria: '200h', 
+    modalidade: 'Presencial',
+    preco: 'R$ 2.500,00'
   },
   {
-    id: 2,
-    titulo: 'Design UX/UI',
-    duracao: '4 meses',
+    id: 2, 
+    titulo: 'Técnico em Logística', 
+    duracao: '4 meses', 
     nivel: 'Básico',
-    categoria: 'Design',
-    descricao: 'Domine os fundamentos do design de interfaces e experiência do usuário com ferramentas profissionais.',
-    preco: 'R$ 1.800,00',
-    cargaHoraria: '120h',
-    modalidade: 'Híbrido'
+    categoria: 'Design', 
+    descricao: 'Organiza transporte, armazenamento e distribuição de produtos.',
+    cargaHoraria: '160h', 
+    modalidade: 'Online',
+    preco: 'R$ 1.800,00'
   },
   {
-    id: 3,
-    titulo: 'Marketing Digital',
-    duracao: '3 meses',
-    nivel: 'Básico',
-    categoria: 'Marketing',
-    descricao: 'Estratégias de marketing digital, redes sociais, SEO e análise de dados para impulsionar negócios.',
-    preco: 'R$ 1.200,00',
-    cargaHoraria: '80h',
-    modalidade: 'Presencial'
-  },
-  {
-    id: 4,
-    titulo: 'Análise de Dados',
-    duracao: '5 meses',
+    id: 3, 
+    titulo: 'Técnico em Segurança do Trabalho', 
+    duracao: '3 meses', 
     nivel: 'Avançado',
-    categoria: 'Tecnologia',
-    descricao: 'Transforme dados em insights valiosos usando Python, SQL e ferramentas de visualização.',
-    preco: 'R$ 3.000,00',
-    cargaHoraria: '180h',
-    modalidade: 'Presencial'
+    categoria: 'Marketing', 
+    descricao: 'Estratégias avançadas de marketing digital, SEO, redes sociais.',
+    cargaHoraria: '120h', 
+    modalidade: 'Híbrido',
+    preco: 'R$ 2.200,00'
   },
   {
-    id: 5,
-    titulo: 'Gestão de Projetos',
-    duracao: '4 meses',
+    id: 4, 
+    titulo: 'Técnico em Mecatrônica Industrial', 
+    duracao: '2 meses', 
     nivel: 'Intermediário',
-    categoria: 'Gestão',
-    descricao: 'Metodologias ágeis, liderança de equipes e gestão eficiente de projetos empresariais.',
-    preco: 'R$ 2.200,00',
-    cargaHoraria: '150h',
-    modalidade: 'Híbrido'
+    categoria: 'Gestão', 
+    descricao: 'Metodologias ágeis como Scrum e Kanban para gerenciar projetos.',
+    cargaHoraria: '80h', 
+    modalidade: 'Online',
+    preco: 'R$ 1.500,00'
   },
   {
-    id: 6,
-    titulo: 'Segurança da Informação',
-    duracao: '6 meses',
-    nivel: 'Avançado',
-    categoria: 'Tecnologia',
-    descricao: 'Proteja sistemas e dados contra ameaças cibernéticas com técnicas avançadas de segurança.',
-    preco: 'R$ 3.500,00',
-    cargaHoraria: '220h',
-    modalidade: ''
+    id: 5, 
+    titulo: 'Técnico em Soldagem', 
+    duracao: '5 meses', 
+    nivel: 'Básico',
+    categoria: 'Tecnologia', 
+    descricao: 'Curso completo desde o básico até projetos práticos.',
+    cargaHoraria: '180h', 
+    modalidade: 'Presencial',
+    preco: 'R$ 1.900,00'
+  },
+  {
+    id: 6, 
+    titulo: 'Técnico em Eletrotécnica', 
+    duracao: '4 meses', 
+    nivel: 'Intermediário',
+    categoria: 'Design', 
+    descricao: 'Interfaces intuitivas e experiências de usuário excepcionais.',
+    cargaHoraria: '150h', 
+    modalidade: 'Híbrido',
+    preco: 'R$ 2.300,00'
   }
 ];
 
 const CATEGORIAS = ['Todos', 'Tecnologia', 'Design', 'Marketing', 'Gestão'];
 const NIVEIS = ['Todos', 'Básico', 'Intermediário', 'Avançado'];
+const EXPERIENCIAS = ['Ensino Fundamental', 'Ensino Médio', 'Ensino Superior', 'Pós-graduação'];
+const TURNOS = ['Manhã', 'Tarde', 'Noite'];
+const MODALIDADES = ['Presencial', 'Online', 'Híbrido'];
 
-const CursosScreen = ({ onNavigateBack }) => {
+const CursosScreen = ({ onBack }) => {
   const [filtroCategoria, setFiltroCategoria] = useState('Todos');
   const [filtroNivel, setFiltroNivel] = useState('Todos');
   const [cursoSelecionado, setCursoSelecionado] = useState(null);
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [dadosFormulario, setDadosFormulario] = useState({
+    nome: '', email: '', telefone: '', cpf: '', endereco: '', cep: '',
+    turno: '', experiencia: '', modalidade: '', motivacao: ''
+  });
 
-  // Callbacks memoizados
-  const handleVoltar = useCallback(() => onNavigateBack(), [onNavigateBack]);
-  const handleFiltroCategoria = useCallback((categoria) => setFiltroCategoria(categoria), []);
-  const handleFiltroNivel = useCallback((nivel) => setFiltroNivel(nivel), []);
-  const handleCursoPress = useCallback((curso) => setCursoSelecionado(curso), []);
-  const handleFecharDetalhes = useCallback(() => setCursoSelecionado(null), []);
-  const handleInscricao = useCallback((curso) => {
-    console.log('Inscrição no curso:', curso.titulo);
+  const handleVoltar = useCallback(() => {
+    if (onBack && typeof onBack === 'function') {
+      onBack();
+    }
+  }, [onBack]);
+
+  const handleFecharDetalhes = useCallback(() => {
     setCursoSelecionado(null);
+    setMostrarFormulario(false);
+    setDadosFormulario({ 
+      nome: '', email: '', telefone: '', cpf: '', endereco: '', cep: '', 
+      turno: '', experiencia: '', modalidade: '', motivacao: '' 
+    });
   }, []);
 
-  // Filtrar cursos
-  const cursosFiltrados = useMemo(() => {
-    return CURSOS_DATA.filter(curso => {
-      const categoriaMatch = filtroCategoria === 'Todos' || curso.categoria === filtroCategoria;
-      const nivelMatch = filtroNivel === 'Todos' || curso.nivel === filtroNivel;
-      return categoriaMatch && nivelMatch;
-    });
-  }, [filtroCategoria, filtroNivel]);
+  const handleInputChange = useCallback((campo, valor) => {
+    setDadosFormulario(prev => ({ ...prev, [campo]: valor }));
+  }, []);
 
-  // Componente de Card do Curso
+  const handleSubmitFormulario = useCallback(() => {
+    if (!dadosFormulario.nome || !dadosFormulario.email || !dadosFormulario.telefone || !dadosFormulario.cpf) {
+      alert('Preencha todos os campos obrigatórios.');
+      return;
+    }
+    alert(`Inscrição realizada com sucesso!\nCurso: ${cursoSelecionado.titulo}\nNome: ${dadosFormulario.nome}`);
+    handleFecharDetalhes();
+  }, [dadosFormulario, cursoSelecionado, handleFecharDetalhes]);
+
+  const cursosFiltrados = useMemo(() => CURSOS_DATA.filter(curso => 
+    (filtroCategoria === 'Todos' || curso.categoria === filtroCategoria) &&
+    (filtroNivel === 'Todos' || curso.nivel === filtroNivel)
+  ), [filtroCategoria, filtroNivel]);
+
+  const CustomPicker = ({ value, onValueChange, options, placeholder }) => {
+    const [showOptions, setShowOptions] = useState(false);
+    return (
+      <View style={styles.pickerContainer}>
+        <TouchableOpacity 
+          style={styles.pickerButton} 
+          onPress={() => setShowOptions(!showOptions)}
+        >
+          <Text style={[styles.pickerText, !value && styles.pickerPlaceholder]}>
+            {value || placeholder}
+          </Text>
+          <Text style={styles.pickerArrow}>{showOptions ? '▲' : '▼'}</Text>
+        </TouchableOpacity>
+        {showOptions && (
+          <View style={styles.pickerOptions}>
+            {options.map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={styles.pickerOption}
+                onPress={() => {
+                  onValueChange(option);
+                  setShowOptions(false);
+                }}
+              >
+                <Text style={styles.pickerOptionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </View>
+    );
+  };
+
   const CursoCard = ({ curso }) => (
-    <AnimatedButton
-      style={styles.cursoCard}
-      onPress={() => handleCursoPress(curso)}
-      animationType="scale"
+    <TouchableOpacity 
+      style={styles.cursoCard} 
+      onPress={() => setCursoSelecionado(curso)} 
+      activeOpacity={0.7}
     >
       <View style={styles.cursoHeader}>
         <View style={styles.cursoCategoria}>
@@ -159,10 +169,8 @@ const CursosScreen = ({ onNavigateBack }) => {
           <Text style={styles.cursoNivelText}>{curso.nivel}</Text>
         </View>
       </View>
-      
       <Text style={styles.cursoTitulo}>{curso.titulo}</Text>
       <Text style={styles.cursoDescricao} numberOfLines={3}>{curso.descricao}</Text>
-      
       <View style={styles.cursoInfo}>
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Duração:</Text>
@@ -173,412 +181,723 @@ const CursosScreen = ({ onNavigateBack }) => {
           <Text style={styles.infoValue}>{curso.modalidade}</Text>
         </View>
       </View>
-      
       <View style={styles.cursoFooter}>
         <Text style={styles.cursoPreco}>{curso.preco}</Text>
         <Text style={styles.cursoCargaHoraria}>{curso.cargaHoraria}</Text>
       </View>
-    </AnimatedButton>
+    </TouchableOpacity>
   );
 
-  // Componente de Detalhes do Curso (Modal)
-  const DetalhesModal = () => {
-    if (!cursoSelecionado) return null;
+  const FormField = ({ label, required, children }) => (
+    <View style={styles.formGroup}>
+      <Text style={styles.formLabel}>
+        {label} {required && <Text style={styles.requiredAsterisk}>*</Text>}
+      </Text>
+      {children}
+    </View>
+  );
 
-    return (
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.modalHeader}>
-              <TouchableOpacity style={styles.fecharButton} onPress={handleFecharDetalhes}>
-                <Text style={styles.fecharButtonText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-            
-            <View style={styles.modalContent}>
-              <View style={styles.modalCategorias}>
-                <View style={styles.cursoCategoria}>
-                  <Text style={styles.cursoCategoriaText}>{cursoSelecionado.categoria}</Text>
-                </View>
-                <View style={styles.cursoNivel}>
-                  <Text style={styles.cursoNivelText}>{cursoSelecionado.nivel}</Text>
-                </View>
-              </View>
-              
-              <Text style={styles.modalTitulo}>{cursoSelecionado.titulo}</Text>
-              <Text style={styles.modalDescricao}>{cursoSelecionado.descricao}</Text>
-              
-              <View style={styles.modalInfoGrid}>
-                <View style={styles.modalInfoItem}>
-                  <Text style={styles.modalInfoLabel}>Duração</Text>
-                  <Text style={styles.modalInfoValue}>{cursoSelecionado.duracao}</Text>
-                </View>
-                <View style={styles.modalInfoItem}>
-                  <Text style={styles.modalInfoLabel}>Carga Horária</Text>
-                  <Text style={styles.modalInfoValue}>{cursoSelecionado.cargaHoraria}</Text>
-                </View>
-                <View style={styles.modalInfoItem}>
-                  <Text style={styles.modalInfoLabel}>Modalidade</Text>
-                  <Text style={styles.modalInfoValue}>{cursoSelecionado.modalidade}</Text>
-                </View>
-                <View style={styles.modalInfoItem}>
-                  <Text style={styles.modalInfoLabel}>Preço</Text>
-                  <Text style={styles.modalInfoPreco}>{cursoSelecionado.preco}</Text>
-                </View>
-              </View>
-              
-              <AnimatedButton
-                style={styles.inscricaoButton}
-                onPress={() => handleInscricao(cursoSelecionado)}
-                animationType="scale"
-              >
-                <Text style={styles.inscricaoButtonText}>Fazer Inscrição</Text>
-              </AnimatedButton>
-            </View>
-          </ScrollView>
+  const FormularioInscricao = () => (
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      style={styles.formularioContainer}
+    >
+      <Text style={styles.formularioTitulo}>Formulário de Inscrição</Text>
+      <Text style={styles.formularioSubtitulo}>Curso: {cursoSelecionado.titulo}</Text>
+      
+      <ScrollView 
+        style={styles.formulario} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.formularioContent}
+      >
+        <FormField label="Nome Completo" required>
+          <TextInput
+            value={dadosFormulario.nome}
+            onChangeText={(text) => handleInputChange('nome', text)}
+            style={styles.formInput}
+            placeholder="Digite seu nome completo"
+            placeholderTextColor="#999"
+          />
+        </FormField>
+
+        <FormField label="E-mail" required>
+          <TextInput
+            value={dadosFormulario.email}
+            onChangeText={(text) => handleInputChange('email', text)}
+            style={styles.formInput}
+            keyboardType="email-address"
+            placeholder="seu.email@exemplo.com"
+            placeholderTextColor="#999"
+          />
+        </FormField>
+
+        <View style={styles.formRow}>
+          <View style={[styles.formGroup, { flex: 1, marginRight: 10 }]}>
+            <Text style={styles.formLabel}>Telefone *</Text>
+            <TextInput
+              value={dadosFormulario.telefone}
+              onChangeText={(text) => handleInputChange('telefone', text)}
+              style={styles.formInput}
+              keyboardType="phone-pad"
+              placeholder="(11) 99999-9999"
+              placeholderTextColor="#999"
+            />
+          </View>
+          <View style={[styles.formGroup, { flex: 1, marginLeft: 10 }]}>
+            <Text style={styles.formLabel}>CPF *</Text>
+            <TextInput
+              value={dadosFormulario.cpf}
+              onChangeText={(text) => handleInputChange('cpf', text)}
+              style={styles.formInput}
+              placeholder="000.000.000-00"
+              placeholderTextColor="#999"
+            />
+          </View>
         </View>
-      </View>
-    );
-  };
+
+        <View style={styles.formRow}>
+          <View style={[styles.formGroup, { flex: 1, marginRight: 10 }]}>
+            <Text style={styles.formLabel}>CEP</Text>
+            <TextInput
+              value={dadosFormulario.cep}
+              onChangeText={(text) => handleInputChange('cep', text)}
+              style={styles.formInput}
+              keyboardType="numeric"
+              placeholder="00000-000"
+              placeholderTextColor="#999"
+            />
+          </View>
+          <View style={[styles.formGroup, { flex: 1, marginLeft: 10 }]}>
+            <Text style={styles.formLabel}>Turno Preferido</Text>
+            <CustomPicker
+              value={dadosFormulario.turno}
+              onValueChange={(value) => handleInputChange('turno', value)}
+              options={TURNOS}
+              placeholder="Selecione"
+            />
+          </View>
+        </View>
+
+        <FormField label="Endereço">
+          <TextInput
+            value={dadosFormulario.endereco}
+            onChangeText={(text) => handleInputChange('endereco', text)}
+            style={styles.formInput}
+            placeholder="Rua, número, bairro, cidade"
+            placeholderTextColor="#999"
+          />
+        </FormField>
+
+        <FormField label="Modalidade Preferida">
+          <CustomPicker
+            value={dadosFormulario.modalidade}
+            onValueChange={(value) => handleInputChange('modalidade', value)}
+            options={MODALIDADES}
+            placeholder="Selecione"
+          />
+        </FormField>
+
+        <FormField label="Nível de Escolaridade">
+          <CustomPicker
+            value={dadosFormulario.experiencia}
+            onValueChange={(value) => handleInputChange('experiencia', value)}
+            options={EXPERIENCIAS}
+            placeholder="Selecione"
+          />
+        </FormField>
+
+        <FormField label="Por que deseja fazer este curso?">
+          <TextInput
+            value={dadosFormulario.motivacao}
+            onChangeText={(text) => handleInputChange('motivacao', text)}
+            style={[styles.formInput, styles.formTextarea]}
+            placeholder="Conte-nos sobre sua motivação..."
+            placeholderTextColor="#999"
+            multiline
+            numberOfLines={4}
+          />
+        </FormField>
+
+        <View style={styles.formButtons}>
+          <TouchableOpacity
+            style={styles.cancelarButton}
+            onPress={() => setMostrarFormulario(false)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.cancelarButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.confirmarButton}
+            onPress={handleSubmitFormulario}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.confirmarButtonText}>Confirmar Inscrição</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+
+  const FiltroButton = ({ items, selected, onSelect, label }) => (
+    <View style={styles.filtroRow}>
+      <Text style={styles.filtroLabel}>{label}:</Text>
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filtroScrollContent}
+      >
+        {items.map((item) => (
+          <TouchableOpacity
+            key={item}
+            style={[
+              styles.filtroButton,
+              selected === item && styles.filtroButtonActive
+            ]}
+            onPress={() => onSelect(item)}
+          >
+            <Text style={[
+              styles.filtroButtonText,
+              selected === item && styles.filtroButtonTextActive
+            ]}>
+              {item}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1a0f2e" />
-      
-      {/* Header */}
+    <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.voltarButton} onPress={handleVoltar}>
+        <TouchableOpacity 
+          style={styles.voltarButton} 
+          onPress={handleVoltar} 
+          activeOpacity={0.7}
+        >
           <Text style={styles.voltarButtonText}>← Voltar</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Cursos Técnicos</Text>
-        <View style={styles.headerSpacer} />
+        <View style={styles.placeholder} />
       </View>
 
-      {/* Filtros */}
       <View style={styles.filtrosContainer}>
-        {/* Filtro de Categoria */}
-        <View style={styles.filtroRow}>
-          <Text style={styles.filtroLabel}>Categoria:</Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            style={styles.filtroScroll}
-            contentContainerStyle={styles.filtroScrollContent}
-          >
-            {CATEGORIAS.map((categoria) => (
-              <TouchableOpacity
-                key={categoria}
-                style={[
-                  styles.filtroButton,
-                  filtroCategoria === categoria && styles.filtroButtonActive
-                ]}
-                onPress={() => handleFiltroCategoria(categoria)}
-              >
-                <Text style={[
-                  styles.filtroButtonText,
-                  filtroCategoria === categoria && styles.filtroButtonTextActive
-                ]}>
-                  {categoria}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-        
-        {/* Filtro de Nível */}
-        <View style={styles.filtroRow}>
-          <Text style={styles.filtroLabel}>Nível:</Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            style={styles.filtroScroll}
-            contentContainerStyle={styles.filtroScrollContent}
-          >
-            {NIVEIS.map((nivel) => (
-              <TouchableOpacity
-                key={nivel}
-                style={[
-                  styles.filtroButton,
-                  filtroNivel === nivel && styles.filtroButtonActive
-                ]}
-                onPress={() => handleFiltroNivel(nivel)}
-              >
-                <Text style={[
-                  styles.filtroButtonText,
-                  filtroNivel === nivel && styles.filtroButtonTextActive
-                ]}>
-                  {nivel}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+        <FiltroButton 
+          items={CATEGORIAS} 
+          selected={filtroCategoria} 
+          onSelect={setFiltroCategoria} 
+          label="Categoria" 
+        />
+        <FiltroButton 
+          items={NIVEIS} 
+          selected={filtroNivel} 
+          onSelect={setFiltroNivel} 
+          label="Nível" 
+        />
       </View>
 
-      {/* Lista de Cursos */}
-      <ScrollView style={styles.cursosContainer} showsVerticalScrollIndicator={false}>
-        <View style={styles.cursosGrid}>
-          {cursosFiltrados.map((curso) => (
-            <CursoCard key={curso.id} curso={curso} />
-          ))}
-        </View>
-        
-        {cursosFiltrados.length === 0 && (
-          <View style={styles.emptyCursos}>
-            <Text style={styles.emptyCursosText}>Nenhum curso encontrado com os filtros selecionados.</Text>
+      <FlatList
+        data={cursosFiltrados}
+        renderItem={({ item }) => <CursoCard curso={item} />}
+        keyExtractor={item => item.id.toString()}
+        contentContainerStyle={styles.cursosContainer}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Nenhum curso encontrado com os filtros selecionados.</Text>
           </View>
-        )}
-      </ScrollView>
+        }
+      />
 
-      {/* Modal de Detalhes */}
-      <DetalhesModal />
-    </SafeAreaView>
+      <Modal
+        animationType="slide"
+        transparent
+        visible={!!cursoSelecionado}
+        onRequestClose={handleFecharDetalhes}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Pressable 
+                style={styles.fecharButton} 
+                onPress={handleFecharDetalhes}
+              >
+                <Text style={styles.fecharButtonText}>✕</Text>
+              </Pressable>
+            </View>
+            
+            <ScrollView 
+              style={styles.modalContent}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.modalContentContainer}
+            >
+              {!mostrarFormulario ? (
+                <>
+                  <View style={styles.modalCategorias}>
+                    <View style={styles.cursoCategoria}>
+                      <Text style={styles.cursoCategoriaText}>{cursoSelecionado?.categoria}</Text>
+                    </View>
+                    <View style={styles.cursoNivel}>
+                      <Text style={styles.cursoNivelText}>{cursoSelecionado?.nivel}</Text>
+                    </View>
+                  </View>
+                  
+                  <Text style={styles.modalTitulo}>{cursoSelecionado?.titulo}</Text>
+                  <Text style={styles.modalDescricao}>{cursoSelecionado?.descricao}</Text>
+                  
+                  <View style={styles.modalInfoGrid}>
+                    {[
+                      { label: 'Duração', value: cursoSelecionado?.duracao },
+                      { label: 'Carga Horária', value: cursoSelecionado?.cargaHoraria },
+                      { label: 'Modalidade', value: cursoSelecionado?.modalidade },
+                      { label: 'Preço', value: cursoSelecionado?.preco, isPrice: true }
+                    ].map((info, index) => (
+                      <View key={index} style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>{info.label}</Text>
+                        <Text style={info.isPrice ? styles.modalInfoPreco : styles.modalInfoValue}>
+                          {info.value}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                  
+                  <TouchableOpacity
+                    style={styles.inscricaoButton}
+                    onPress={() => setMostrarFormulario(true)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.inscricaoButtonText}>Fazer Inscrição</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <FormularioInscricao />
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1a0f2e' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    paddingTop: 50,
-    backgroundColor: '#1a0f2e',
-    borderBottomWidth: 1,
+  container: { 
+    flex: 1, 
+    backgroundColor: '#1a0f2e' 
+  },
+  header: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    padding: 20, 
+    paddingTop: 50, 
+    backgroundColor: '#1a0f2e', 
+    borderBottomWidth: 1, 
     borderBottomColor: 'rgba(139, 92, 246, 0.2)',
+    zIndex: 1
   },
   voltarButton: {
     backgroundColor: 'rgba(139, 92, 246, 0.2)',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
-  },
-  voltarButtonText: { fontSize: 16, color: '#ffffff', fontWeight: '500' },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    textAlign: 'center',
-    flex: 1,
-  },
-  headerSpacer: { width: 80 },
-  filtrosContainer: {
-    backgroundColor: '#1a0f2e',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(139, 92, 246, 0.1)',
-  },
-  filtroRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  filtroLabel: {
-    fontSize: 14,
-    color: '#cccccc',
-    fontWeight: '500',
-    minWidth: 80,
-    marginRight: 10,
-  },
-  filtroScroll: {
-    flex: 1,
-  },
-  filtroScrollContent: {
-    paddingRight: 20,
-  },
-  filtroButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  filtroButtonActive: {
-    backgroundColor: '#8b5cf6',
-    borderColor: '#8b5cf6',
-  },
-  filtroButtonText: { fontSize: 12, color: '#ffffff', fontWeight: '500' },
-  filtroButtonTextActive: { color: '#ffffff' },
-  cursosContainer: { flex: 1, backgroundColor: '#1a0f2e' },
-  cursosGrid: { padding: 20, gap: 20 },
-  cursoCard: {
-    backgroundColor: '#000000',
-    borderRadius: 15,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.2)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  cursoHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
-  },
-  cursoCategoria: {
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  cursoCategoriaText: { fontSize: 12, color: '#8b5cf6', fontWeight: '600' },
-  cursoNivel: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  cursoNivelText: { fontSize: 12, color: '#ffffff', fontWeight: '500' },
-  cursoTitulo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 10,
-    lineHeight: 24,
-  },
-  cursoDescricao: {
-    fontSize: 14,
-    color: '#cccccc',
-    lineHeight: 20,
-    marginBottom: 15,
-  },
-  cursoInfo: { marginBottom: 15 },
-  infoItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 5,
-  },
-  infoLabel: { fontSize: 14, color: '#999999' },
-  infoValue: { fontSize: 14, color: '#ffffff', fontWeight: '500' },
-  cursoFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(139, 92, 246, 0.2)',
-  },
-  cursoPreco: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#8b5cf6',
-  },
-  cursoCargaHoraria: {
-    fontSize: 14,
-    color: '#cccccc',
-    fontWeight: '500',
-  },
-  emptyCursos: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 60,
-  },
-  emptyCursosText: {
-    fontSize: 16,
-    color: '#cccccc',
-    textAlign: 'center',
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  modalContainer: {
-    backgroundColor: '#1a0f2e',
+    paddingVertical: 8,
     borderRadius: 20,
-    margin: 20,
-    maxHeight: height * 0.8,
-    width: width * 0.9,
-    borderWidth: 2,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    padding: 20,
-    paddingBottom: 10,
-  },
-  fecharButton: {
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
-    width: 35,
-    height: 35,
-    borderRadius: 17.5,
-    justifyContent: 'center',
-    alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(139, 92, 246, 0.4)',
   },
-  fecharButtonText: { fontSize: 18, color: '#ffffff', fontWeight: 'bold' },
-  modalContent: { paddingHorizontal: 20, paddingBottom: 30 },
-  modalCategorias: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  modalTitulo: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  voltarButtonText: {
+    fontSize: 14,
     color: '#ffffff',
-    marginBottom: 15,
-    lineHeight: 30,
+    fontWeight: '600',
   },
-  modalDescricao: {
-    fontSize: 16,
-    color: '#cccccc',
-    lineHeight: 24,
-    textAlign: 'justify',
-    marginBottom: 25,
+  headerTitle: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    color: '#ffffff', 
+    textAlign: 'center',
+    flex: 1 
   },
-  modalInfoGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 30,
+  placeholder: { 
+    width: 70 
   },
-  modalInfoItem: {
-    width: '48%',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.2)',
+  filtrosContainer: { 
+    backgroundColor: '#1a0f2e', 
+    padding: 20, 
+    borderBottomWidth: 1, 
+    borderBottomColor: 'rgba(139, 92, 246, 0.1)' 
   },
-  modalInfoLabel: { fontSize: 12, color: '#999999', marginBottom: 5 },
-  modalInfoValue: { fontSize: 16, color: '#ffffff', fontWeight: '600' },
-  modalInfoPreco: { fontSize: 18, color: '#8b5cf6', fontWeight: 'bold' },
-  inscricaoButton: {
-    backgroundColor: '#8b5cf6',
-    paddingVertical: 16,
-    borderRadius: 25,
-    alignItems: 'center',
-    shadowColor: '#8b5cf6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+  filtroRow: { 
+    marginBottom: 15 
   },
-  inscricaoButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
+  filtroLabel: { 
+    fontSize: 15, 
+    color: '#cccccc', 
+    fontWeight: '500', 
+    marginBottom: 10 
   },
+  filtroScrollContent: { 
+    paddingRight: 20 
+  },
+  filtroButton: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+    paddingHorizontal: 16, 
+    paddingVertical: 8, 
+    borderRadius: 20, 
+    marginRight: 10, 
+    borderWidth: 1, 
+    borderColor: 'rgba(255, 255, 255, 0.2)' 
+  },
+  filtroButtonActive: { 
+    backgroundColor: '#8b5cf6', 
+    borderColor: '#8b5cf6' 
+  },
+  filtroButtonText: { 
+    fontSize: 12, 
+    color: '#ffffff', 
+    fontWeight: '500' 
+  },
+  filtroButtonTextActive: { 
+    color: '#ffffff', 
+    fontWeight: '600' 
+  },
+  cursosContainer: { 
+    padding: 25, 
+    paddingBottom: 100 
+  },
+  cursoCard: { 
+    backgroundColor: '#2a1f3d', 
+    borderRadius: 15, 
+    padding: 20, 
+    borderWidth: 1, 
+    borderColor: 'rgba(139, 92, 246, 0.3)', 
+    marginBottom: 40, 
+    shadowColor: '#6E6EFF', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 8, 
+    elevation: 5 
+  },
+  cursoHeader: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginBottom: 15 
+  },
+  cursoCategoria: { 
+    backgroundColor: 'rgba(198, 190, 216, 0.2)', 
+    paddingHorizontal: 12, 
+    paddingVertical: 6, 
+    borderRadius: 12 
+  },
+  cursoCategoriaText: { 
+    fontSize: 12, 
+    color: '#9474FF', 
+    fontWeight: '600' 
+  },
+  cursoNivel: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+    paddingHorizontal: 12, 
+    paddingVertical: 6, 
+    borderRadius: 12 
+  },
+  cursoNivelText: { 
+    fontSize: 12, 
+    color: '#ffffff', 
+    fontWeight: '500' 
+  },
+  cursoTitulo: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    color: '#ffffff', 
+    marginBottom: 10, 
+    lineHeight: 24 
+  },
+  cursoDescricao: { 
+    fontSize: 14, 
+    color: '#cccccc', 
+    lineHeight: 20, 
+    marginBottom: 15 
+  },
+  cursoInfo: { 
+    marginBottom: 15 
+  },
+  infoItem: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginBottom: 8 
+  },
+  infoLabel: { 
+    fontSize: 14, 
+    color: '#999999' 
+  },
+  infoValue: { 
+    fontSize: 14, 
+    color: '#ffffff', 
+    fontWeight: '500' 
+  },
+  cursoFooter: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    paddingTop: 15, 
+    borderTopWidth: 1, 
+    borderTopColor: 'rgba(139, 92, 246, 0.2)' 
+  },
+  cursoPreco: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    color: '#8b5cf6' 
+  },
+  cursoCargaHoraria: { 
+    fontSize: 14, 
+    color: '#cccccc', 
+    fontWeight: '500' 
+  },
+  emptyContainer: { 
+    padding: 40, 
+    alignItems: 'center', 
+    justifyContent: 'center' 
+  },
+  emptyText: { 
+    color: '#cccccc', 
+    fontSize: 16, 
+    textAlign: 'center', 
+    lineHeight: 24 
+  },
+  modalOverlay: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: 'rgba(0, 0, 0, 0.8)' 
+  },
+  modalContainer: { 
+    backgroundColor: '#1a0f2e', 
+    borderRadius: 20, 
+    margin: 20, 
+    maxHeight: '90%', 
+    width: '90%', 
+    maxWidth: 600, 
+    borderWidth: 2, 
+    borderColor: 'rgba(139, 92, 246, 0.3)' 
+  },
+  modalHeader: { 
+    flexDirection: 'row', 
+    justifyContent: 'flex-end', 
+    padding: 20, 
+    paddingBottom: 0 
+  },
+  modalContent: { 
+    paddingHorizontal: 20 
+  },
+  modalContentContainer: { 
+    paddingBottom: 30 
+  },
+  fecharButton: { 
+    backgroundColor: 'rgba(139, 92, 246, 0.2)', 
+    width: 35, 
+    height: 35, 
+    borderRadius: 35, 
+    borderWidth: 1, 
+    borderColor: 'rgba(139, 92, 246, 0.4)', 
+    alignItems: 'center', 
+    justifyContent: 'center' 
+  },
+  fecharButtonText: { 
+    fontSize: 18, 
+    color: '#ffffff', 
+    fontWeight: 'bold' 
+  },
+  modalCategorias: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginBottom: 20 
+  },
+  modalTitulo: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    color: '#ffffff', 
+    marginBottom: 15, 
+    lineHeight: 30 
+  },
+  modalDescricao: { 
+    fontSize: 16, 
+    color: '#cccccc', 
+    lineHeight: 24, 
+    marginBottom: 25 
+  },
+  modalInfoGrid: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'space-between', 
+    marginBottom: 30 
+  },
+  modalInfoItem: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+    padding: 15, 
+    borderRadius: 10, 
+    borderWidth: 1, 
+    borderColor: 'rgba(139, 92, 246, 0.2)', 
+    width: '48%', 
+    marginBottom: 10 
+  },
+  modalInfoLabel: { 
+    fontSize: 12, 
+    color: '#999999', 
+    marginBottom: 5 
+  },
+  modalInfoValue: { 
+    fontSize: 16, 
+    color: '#ffffff', 
+    fontWeight: '600' 
+  },
+  modalInfoPreco: { 
+    fontSize: 18, 
+    color: '#8b5cf6', 
+    fontWeight: 'bold' 
+  },
+  inscricaoButton: { 
+    backgroundColor: '#8b5cf6', 
+    padding: 16, 
+    borderRadius: 25, 
+    alignItems: 'center', 
+    marginTop: 10 
+  },
+  inscricaoButtonText: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    color: '#ffffff' 
+  },
+  formularioContainer: { 
+    flex: 1, 
+    paddingBottom: 20 
+  },
+  formulario: { 
+    flex: 1 
+  },
+  formularioContent: { 
+    paddingBottom: 30 
+  },
+  formularioTitulo: { 
+    fontSize: 22, 
+    fontWeight: 'bold', 
+    color: '#ffffff', 
+    marginBottom: 10, 
+    textAlign: 'center' 
+  },
+  formularioSubtitulo: { 
+    fontSize: 16, 
+    color: '#8b5cf6', 
+    marginBottom: 25, 
+    textAlign: 'center', 
+    fontWeight: '500' 
+  },
+  formRow: { 
+    flexDirection: 'row', 
+    marginBottom: 20 
+  },
+  formGroup: { 
+    flex: 1, 
+    marginBottom: 20 
+  },
+  formLabel: { 
+    fontSize: 14, 
+    color: '#cccccc', 
+    marginBottom: 8, 
+    fontWeight: '500' 
+  },
+  requiredAsterisk: {
+    color: '#ff0000'
+  },
+  formInput: { 
+    padding: 12, 
+    borderRadius: 8, 
+    borderWidth: 1, 
+    borderColor: 'rgba(139, 92, 246, 0.3)', 
+    backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+    color: '#ffffff', 
+    fontSize: 14 
+  },
+  formTextarea: { 
+    minHeight: 100, 
+    textAlignVertical: 'top' 
+  },
+  pickerContainer: { 
+    position: 'relative', 
+    zIndex: 1 
+  },
+  pickerButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    padding: 12, 
+    borderRadius: 8, 
+    borderWidth: 1, 
+    borderColor: 'rgba(139, 92, 246, 0.3)', 
+    backgroundColor: 'rgba(255, 255, 255, 0.05)' 
+  },
+  pickerText: { 
+    color: '#ffffff', 
+    fontSize: 14 
+  },
+  pickerPlaceholder: { 
+    color: '#999' 
+  },
+  pickerArrow: { 
+    color: '#8b5cf6', 
+    marginLeft: 10 
+  },
+  pickerOptions: { 
+    position: 'absolute', 
+    top: '100%', 
+    left: 0, 
+    right: 0, 
+    backgroundColor: '#2a1f3d', 
+    borderRadius: 8, 
+    borderWidth: 1, 
+    borderColor: 'rgba(139, 92, 246, 0.3)', 
+    marginTop: 5, 
+    zIndex: 10 
+  },
+  pickerOption: { 
+    padding: 12, 
+    borderBottomWidth: 1, 
+    borderBottomColor: 'rgba(139, 92, 246, 0.1)' 
+  },
+  pickerOptionText: { 
+    color: '#ffffff', 
+    fontSize: 14 
+  },
+  formButtons: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginTop: 20 
+  },
+  cancelarButton: { 
+    flex: 1, 
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+    padding: 16, 
+    borderRadius: 25, 
+    alignItems: 'center', 
+    marginRight: 10, 
+    borderWidth: 1, 
+    borderColor: 'rgba(255, 255, 255, 0.2)' 
+  },
+  cancelarButtonText: { 
+    fontSize: 16, 
+    fontWeight: '600', 
+    color: '#ffffff' 
+  },
+  confirmarButton: { 
+    flex: 1, 
+    backgroundColor: '#8b5cf6', 
+    padding: 16, 
+    borderRadius: 25, 
+    alignItems: 'center', 
+    marginLeft: 10 
+  },
+  confirmarButtonText: { 
+    fontSize: 16, 
+    fontWeight: 'bold', 
+    color: '#ffffff' 
+  }
 });
 
 export default CursosScreen;

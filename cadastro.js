@@ -33,13 +33,11 @@ export default function CadastroScreen({ onNavigateBack, onNavigateToLogin, onRe
   const [showPassword, setShowPassword] = useState(false);
 
 
-  const handleRegister = useCallback(async () => {
-  if (!nome.trim() || !email.trim() || !password.trim() ) {
+const handleRegister = useCallback(async () => {
+  if (!nome.trim() || !email.trim() || !password.trim()) {
     alert('Por favor, preencha todos os campos obrigatórios.');
     return;
   }
-
-
 
   if (password.length < 6) {
     alert('A senha deve ter pelo menos 6 caracteres.');
@@ -55,10 +53,15 @@ export default function CadastroScreen({ onNavigateBack, onNavigateToLogin, onRe
   setIsLoading(true);
 
   try {
-    const response = await fetch('http://SEU_IP_OU_LOCALHOST:3000/register', {
+    const response = await fetch('http://10.0.2.2:3000/register', {
+      // IMPORTANTE: Use 10.0.2.2 no emulador Android para acessar localhost do PC
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, email, password }),
+      body: JSON.stringify({
+        nome: nome.trim(),
+        email: email.trim(),
+        senha: password.trim(), // <-- o backend espera "senha", não "password"
+      }),
     });
 
     const data = await response.json();
@@ -213,7 +216,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#1a0f2e' },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 15, paddingTop: 50, backgroundColor: '#1a0f2e' },
   backButton: { padding: 10, marginRight: 10 },
-  backButtonText: { fontSize: 24, color: '#ffffff', fontWeight: 'bold' },
+  backButtonText: { fontSize: 24, color: '#ffff', fontWeight: 'bold' },
   headerTitle: { fontSize: 20, fontWeight: '600', color: '#ffffff', fontFamily: 'Poppins-SemiBold' },
   headerSpacer: { flex: 1 },
   keyboardContainer: { flex: 1 },
